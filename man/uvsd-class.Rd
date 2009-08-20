@@ -2,17 +2,23 @@
 \docType{class}
 \alias{uvsd-class}
 
-\title{Class "uvsd" ~~~ }
-\description{Object that results from running hierarchical UVSD analysis.}
-
+\title{Class "uvsd"}
+\description{This class holds objects that are returned from
+  uvsdSample.}
 \section{Slots}{
 	 \describe{
-    \item{\code{mu}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{alpha}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{beta}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{s2alpha}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{s2beta}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{theta}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{muN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{alphaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{betaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2alphaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2betaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{thetaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{muS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{alphaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{betaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2alphaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2betaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{thetaS}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{estN}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{estS}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{estS2}:}{Object of class \code{"numeric"} ~~ }
@@ -29,12 +35,5 @@
     \item{\code{b0S2}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{b0Crit}:}{Object of class \code{"numeric"} ~~ }
   }
-}
-\section{Methods}{
-No methods defined with class "uvsd" in the signature.
-}
-\seealso{uvsdSample()}
-\examples{
-showClass("uvsd")
 }
 \keyword{classes}

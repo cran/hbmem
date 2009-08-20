@@ -3,19 +3,23 @@
 \title{Function sampleNorm}
 \description{Samples posterior of mean parameters of the hierarchical
   linear normal model with a single Sigma2.  Usually used within an MCMC
-loop.}
-\usage{sampleNorm(sample, y, subj, item, lag, I, J, R, nsub, nitem,
-    s2mu, s2a, s2b, meta, metb, sigma2, sampLag)}
+  loop.}
+\usage{sampleNorm(sample, y, cond, subj, item, lag, N, I, J, R, ncond, nsub,
+nitem, s2mu, s2a, s2b, meta, metb, sigma2, sampLag=TRUE,Hier=TRUE)}
 
 \arguments{
 \item{sample}{Block of linear model parameters from previous iteration.}
 \item{y}{Vector of data}
+\item{cond}{Vector of condition index, starting at zero.}
 \item{subj}{Vector of subject index, starting at zero.}
 \item{item}{Vector of item index, starting at zero.}
 \item{lag}{Vector of lag index, zero-centered.}
+\item{N}{Number of conditions.}
 \item{I}{Number of subjects.}
 \item{J}{Number of items.}
 \item{R}{Total number of trials.}
+\item{ncond}{Vector of length (N) containing number of trials per each
+  condition.}
 \item{nsub}{Vector of length (I) containing number of trials per each
   subject.}
 \item{nitem}{Vector of length (J) containing number of trials per each
@@ -32,6 +36,10 @@ loop.}
   \item{metb}{Tunning parameter for decorrelating step on alpha and beta.}
   \item{sigma2}{Variance of distribution.}
   \item{sampLag}{Logical.  Whether or not to sample the lag effect.}
+  \item{Hier}{Logical. If TRUE then effect variances are estimated
+    from data.  If FALSE then these values are set to whatever
+    value is in the s2alpha and s2beta slots of sample.  This
+    should always be set to TRUE.}
 }
 
 \value{
@@ -43,42 +51,62 @@ loop.}
 \seealso{hbmem}
 \examples{
 library(hbmem)
+N=2
+t.mu=c(1,2)
 I=20
 J=50
 R=I*J
 #make some data
-dat=normalSim(I=I,J=J,mu=10,s2a=1,s2b=1,muS2=log(1),s2aS2=0,s2bS2=0)
+dat=normalSim(N=N,I=I,J=J,mu=t.mu,s2a=2,s2b=2,muS2=log(1),s2aS2=0,s2bS2=0)
+ncond=table(dat$cond)
 nsub=table(dat$sub)
 nitem=table(dat$item)
 
 M=2000
-keep=200:M
-B=I+J+4
+keep=1000:M
+B=N+I+J+3
 s.block=matrix(0,nrow=M,ncol=B)
 met=c(.1,.1);b0=c(0,0)
+jump=.001
 for(m in 2:M)
 {
-tmp=sampleNorm(s.block[m-1,],dat$resp,dat$subj,dat$item,dat$lag,I,J,R,nsub,nitem,100,.01,.01,met[1],met[2],1,1)
+tmp=sampleNorm(s.block[m-1,],dat$resp,dat$cond,dat$subj,dat$item,dat$lag,
+N,I,J,R,ncond,nsub,nitem,5,.01,.01,met[1],met[2],1,1,1)
 s.block[m,]=tmp[[1]]
 b0=b0 + tmp[[2]]
+
+
+#Auto-tuning of metropolis decorrelating steps 
+if(m>20 & m<min(keep))
+  {
+    met=met+(b0/m<.2)*c(-jump,-jump) +(b0/m>.3)*c(jump,jump)
+    met[met<jump]=jump
+  }
 }
+
+b0/M #check acceptance rate
 
 hbest=colMeans(s.block[keep,])
-estAlpha=tapply(dat$resp,dat$subj,mean) - mean(dat$resp)
-estBeta=tapply(dat$resp,dat$item,mean) - mean(dat$resp)
 
-par(mfrow=c(2,3),pch=19,pty='s')
-plot(s.block[keep,1],t='l')
-abline(h=mean(dat$resp),col="green")
-plot(hbest[2:(I+1)]~estAlpha)
+par(mfrow=c(2,2),pch=19,pty='s')
+matplot(s.block[keep,1:N],t='l')
+abline(h=t.mu,col="green")
+abline(h=tapply(dat$resp,dat$cond,mean),col="orange")
+acf(s.block[keep,1])
+plot(hbest[(N+1):(I+N)]~t.alpha)
 abline(0,1,col="green")
-plot(hbest[(I+2):(I+J+1)]~estBeta)
+plot(hbest[(I+N+1):(I+J+N)]~t.beta)
 abline(0,1,col="green")
+
+
 
 #variance of participant effect
-hist(s.block[keep,(I+J+2)])
+mean(s.block[keep,(N+I+J+1)])
 #variance of item effect
-hist(s.block[keep,(I+J+3)])
-#estimate of lag effect 
-hist(s.block[keep,(I+J+4)])
+mean(s.block[keep,(N+I+J+2)])
+#estimate of lag effect
+mean(s.block[keep,(N+I+J+3)])
+
 }
+
+

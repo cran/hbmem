@@ -18,7 +18,10 @@
 }
 \details{Participants studied a list of 240 words, and were then tested
   on the 240 studied and on 240 new words.  At test, participants made
-  one of six confidence ratings ranging from "sure new" to "sure studied"}
+  one of six confidence ratings ranging from "sure new" to "sure
+  studied".  Note that to apply the models to these data the "Scond"
+  variable should be set to ``cond", and the "cond" variable should
+  be all zeros.  This is a backwards-compatibility issue.}
 
 \source{Pratte, Rouder, \& Morey (2009).  Separating Mnemonic Process
   from Participant and Item Effects in the Assessment of ROC
@@ -26,8 +29,14 @@
   and Cognition.}
 
 \examples{
+library(hbmem)
 data(prm09)
 table(prm09$resp,prm09$cond)
-
+#Turn it into data suitable for
+#analysis with HBMEM functions:
+newdat=prm09
+newdat$Scond=newdat$cond
+newdat$cond=0
+summary(newdat)
 }
 \keyword{datasets}

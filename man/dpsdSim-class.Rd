@@ -2,12 +2,11 @@
 \docType{class}
 \alias{dpsdSim-class}
 
-\title{Class "dpsdSim" ~~~ }
-\description{Object that results from performing a DPSD simulation with
-  dpsdSim(); contains true values and indexes.}
-
+\title{Class "dpsdSim"}
+\description{Class "dpsdSim" to hold objects from DPSD simulations.}
 \section{Slots}{
 	 \describe{
+    \item{\code{Scond}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{cond}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{subj}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{item}:}{Object of class \code{"numeric"} ~~ }
@@ -23,10 +22,5 @@
     \item{\code{alphaR}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{betaR}:}{Object of class \code{"numeric"} ~~ }
   }
-}
-
-\seealso{dpsdSim()}
-\examples{
-showClass("dpsdSim")
 }
 \keyword{classes}

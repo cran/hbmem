@@ -3,16 +3,22 @@
 \alias{dpsd-class}
 
 \title{Class "dpsd" ~~~ }
-\description{Object that is output from performing estimation of
-  hierarchical DPSD model; contains all estimates, chains, etc.}
+\description{Holds all information returned from posterior simulations
+  of dual-process models}
 \section{Slots}{
 	 \describe{
-    \item{\code{mu}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{alpha}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{beta}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{s2alpha}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{s2beta}:}{Object of class \code{"numeric"} ~~ }
-    \item{\code{theta}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{muN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{alphaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{betaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2alphaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2betaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{thetaN}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{muS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{alphaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{betaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2alphaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{s2betaS}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{thetaS}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{estN}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{estS}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{estR}:}{Object of class \code{"numeric"} ~~ }
@@ -28,14 +34,5 @@
     \item{\code{b0}:}{Object of class \code{"matrix"} ~~ }
     \item{\code{b0Crit}:}{Object of class \code{"numeric"} ~~ }
   }
-}
-\section{Methods}{
-No methods defined with class "dpsd" in the signature.
-}
-\author{Michael Pratte}
-
-\seealso{dpsdSample}
-\examples{
-#See help for 'hbmem'
 }
 \keyword{classes}

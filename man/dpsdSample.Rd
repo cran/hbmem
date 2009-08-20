@@ -1,19 +1,35 @@
 \name{dpsdSample}
 \alias{dpsdSample}
-\title{Function dpsdSample}
-\description{Runs MCMC for the hierarchical DPSD model}
-\usage{dpsdSample(dat, M = 5000, keep = (M/10):M, getDIC = TRUE, jump=.01)}
+\title{Function to fit hierarchical DPSD model to data.}
+\description{Runs MCMC estimation for the hierarchical DPSD model.}
+\usage{dpsdSample(dat, M = 5000, keep = (M/10):M, getDIC = TRUE,
+freeCrit=TRUE,Hier=TRUE, jump=.01)}
 
 \arguments{
   \item{dat}{Data frame that must include variables
-    cond,sub,item,lag,resp.  Indexes for cond, sub, item, and respone
-    must start at zero and have no gapes (i.e., no skipped subject
-    numbers). Lags must be zero-centered.}
+    Scond,cond,sub,item,lag,resp.  Scond indexes studied/new, whereas
+    cond indexes conditions nested within the studied or new
+    conditions.  Indexes for Scond,cond, sub, item, and respone must
+    start at zero and have no gaps (i.e., no skipped subject numbers). Lags
+    must be zero-centered.}
   \item{M}{Number of MCMC iterations.}
   \item{keep}{Which MCMC iterations should be included in estimates and
-    returned.  Use keep to both get ride of burn-in, and thin chains if necessary}
-  \item{getDIC}{Logical. should the function compute DIC value?  This
+    returned.  Use keep to both get ride of burn-in, and thin chains if
+    necessary}
+  \item{getDIC}{Logical. Should the function compute DIC value?  This
     takes a while if M is large.}
+  \item{freeCrit}{Logical.  If true then criteria are estimated
+    separately
+    for each participant.  Should be set to false if analizing only one
+    participant (e.g., if averaging over subjects).} 
+  \item{Hier}{Logical. If true then the variances of effects
+    (e.g., item effects) are estimated from the data, i.e., effects are
+    treated as random.  If false then these variances are fixed to
+    2.0 (.5 for recollection effects), thus treating these effects as
+    fixed.  This option is there to allow for compairson with more
+    traditional approaches, and to see the effects of imposing
+    hierarcical structure.  It should always be set to TRUE in real
+    analysis, and is not even guaranteed to work if set to false.}
   \item{jump}{The criteria and decorrelating steps utilize
     Matropolis-Hastings sampling routines, which require tuning.  All
     MCMC functions should self-tune during the burnin period (iterations
@@ -62,25 +78,45 @@
 }
 \references{See Pratte, Rouder, & Morey (2009)}
 \author{Michael S. Pratte}
+\keyword{models}
 \seealso{hbmem}
 \examples{
 #In this example we generate data from EVSD, then fit it with both
 #hierarchical DPSD and DPSD assuming no participant or item effects.
 library(hbmem)
-sim=dpsdSim(I=50,J=200)
-dat=as.data.frame(cbind(sim@subj,sim@item,sim@cond,sim@lag,sim@resp))
-colnames(dat)=c("sub","item","cond","lag","resp")
+sim=dpsdSim(I=30,J=200)
+dat=as.data.frame(cbind(sim@subj,sim@item,sim@cond,sim@Scond,sim@lag,sim@resp))
+colnames(dat)=c("sub","item","cond","Scond","lag","resp")
+dat$lag[dat$Scond==1]=dat$lag[dat$Scond==1]-mean(dat$lag[dat$Scond==1])
 
-M=500 #Too low for real analysis!
+M=200 #Too low for real analysis!
+keep=50:M
 DPSD=dpsdSample(dat,M=M)
 
-#Look at recollection estimates
-par(mfrow=c(1,3),pch=19,pty='s')
-plot(pnorm(DPSD@blockR[,DPSD@mu]),t='l',
+#Look at all parameters
+par(mfrow=c(3,3),pch=19,pty='s')
+
+matplot(DPSD@blockN[,DPSD@muN],t='l',
+ylab="muN")
+abline(h=sim@muN,col="blue")
+plot(DPSD@estN[DPSD@alphaN]~sim@alphaN)
+abline(0,1,col="blue")
+plot(DPSD@estN[DPSD@betaN]~sim@betaN)
+abline(0,1,col="blue")
+
+matplot(DPSD@blockS[,DPSD@muS],t='l',
+ylab="muS")
+abline(h=sim@muS,col="blue")
+plot(DPSD@estS[DPSD@alphaS]~sim@alphaS)
+abline(0,1,col="blue")
+plot(DPSD@estS[DPSD@betaS]~sim@betaS)
+abline(0,1,col="blue")
+
+matplot(pnorm(DPSD@blockR[,DPSD@muS]),t='l',
 ylab="P(recollection)")
 abline(h=pnorm(sim@muR),col="blue")
-plot(DPSD@estR[DPSD@alpha]~sim@alphaR)
+plot(DPSD@estR[DPSD@alphaS]~sim@alphaR)
 abline(0,1,col="blue")
-plot(DPSD@estR[DPSD@beta]~sim@betaR)
+plot(DPSD@estR[DPSD@betaS]~sim@betaR)
 abline(0,1,col="blue")
 }

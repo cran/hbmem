@@ -2,9 +2,10 @@
 \alias{normalSim}
 \title{Function normalSim}
 \description{Simulates data from a hierarchical linear normal model.}
-\usage{normalSim(I=30,J=300,mu=-.5,s2a=.2,s2b=.2,muS2=0,s2aS2=.2,s2bS2=.2)}
+\usage{normalSim(N=1,I=30,J=300,mu=0,s2a=.2,s2b=.2,muS2=0,s2aS2=0,s2bS2=0)}
 
 \arguments{
+  \item{N}{Number of conditions.}
   \item{I}{Number of participants.}
   \item{J}{Number of items.}
   \item{mu}{Grand mean}

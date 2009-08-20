@@ -2,15 +2,18 @@
 \alias{dpsdLogLike}
 \title{Function dpsdLogLike}
 \description{Computes log likelihood for DPSD model}
-\usage{dpsdLogLike(R,I,J,K,dat,cond,sub,item,lag,blockN,blockS,blockR,crit)}
+\usage{dpsdLogLike(R,NN,NS,I,J,K,dat,cond,Scond,sub,item,lag,blockN,blockS,blockR,crit)}
 
 \arguments{
 \item{R}{Total number of trials.}
+\item{NN}{Number of new-item conditions.}
+\item{NS}{Number of studied-item conditions.}
 \item{I}{Number of subjects.}
 \item{J}{Number of items.}
 \item{K}{Number of response options.}
 \item{dat}{Vector of responses, ranging from 0:(K-1).}
-\item{cond}{Vector of condition index; 0=new, 1=studied.}
+\item{cond}{Vector of condition index.}
+\item{Scond}{Vector of new-studied condition index; 0=new, 1=studied.}
 \item{sub}{Vector of subject index, starting at 0 with no missing
   subject numbers.}
 \item{item}{Vector of item index, starting at 0 with no missing
@@ -27,3 +30,4 @@ first subjects, followed by those for the second subject, etc.}
 \references{See Pratte, Rouder, & Morey (2009)}
 \author{Michael S. Pratte}
 \seealso{hbmem}
+\keyword{internal}

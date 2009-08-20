@@ -1,11 +1,12 @@
 \name{uvsdSim-class}
 \docType{class}
 \alias{uvsdSim-class}
+\title{Class "uvsdSim"}
+\description{Class that holds objects from function uvsdSim()}
 
-\title{Class "uvsdSim" ~~~ }
-\description{Object that results from simulating UVSD data with uvsdSim().}
 \section{Slots}{
 	 \describe{
+    \item{\code{Scond}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{cond}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{subj}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{item}:}{Object of class \code{"numeric"} ~~ }
@@ -20,9 +21,7 @@
     \item{\code{betaS}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{alphaS2}:}{Object of class \code{"numeric"} ~~ }
     \item{\code{betaS2}:}{Object of class \code{"numeric"} ~~ }
+    \item{\code{crit}:}{Object of class \code{"matrix"} ~~ }
   }
-}
-\examples{
-showClass("uvsdSim")
 }
 \keyword{classes}
