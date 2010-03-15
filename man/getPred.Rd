@@ -1,3 +1,4 @@
+\keyword{internal}
 \name{getPred}
 \alias{getPred}
 \title{Function getPred}

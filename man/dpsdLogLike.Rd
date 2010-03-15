@@ -2,14 +2,15 @@
 \alias{dpsdLogLike}
 \title{Function dpsdLogLike}
 \description{Computes log likelihood for DPSD model}
-\usage{dpsdLogLike(R,NN,NS,I,J,K,dat,cond,Scond,sub,item,lag,blockN,blockS,blockR,crit)}
+\usage{dpsdLogLike(R,NN,NS,I,JN,JS,K,dat,cond,Scond,sub,item,lag,blockN,blockS,blockR,crit)}
 
 \arguments{
 \item{R}{Total number of trials.}
 \item{NN}{Number of new-item conditions.}
 \item{NS}{Number of studied-item conditions.}
 \item{I}{Number of subjects.}
-\item{J}{Number of items.}
+\item{JN}{Number of items in new condition.}
+\item{JS}{Number of items in studied condition.}
 \item{K}{Number of response options.}
 \item{dat}{Vector of responses, ranging from 0:(K-1).}
 \item{cond}{Vector of condition index.}

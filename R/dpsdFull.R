@@ -1,6 +1,3 @@
-.packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
 dpsdFullSim=function(I=30,J=200,K=6,muN=-.7,s2aN=.2,s2bN=.2,muD=0,s2aD=.2,s2bD=.2,muR=qnorm(.25),phiA=1,etaA=0,phiB=1,etaB=0,crit=matrix(rep(c(-1.6,-.5,0,.5,1.6),each=I),ncol=(K-1)))
   {
     R=I*J

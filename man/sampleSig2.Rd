@@ -46,7 +46,7 @@ true.block=c(true.mean,rep(0,(I+J+3)))
 
 a=b=.01
 
-M=1000
+M=10
 s.sigma2=matrix(1,M,N)
 
 for(m in 2:M)

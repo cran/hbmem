@@ -1,7 +1,3 @@
-.packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
-
 #cond.muD=function(x,mu,alpha,beta,theta,sub,item,lag,sig2mu)
 #{
 #mean=exp(mu+alpha[sub+1]+beta[item+1]+theta*lag)

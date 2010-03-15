@@ -48,7 +48,7 @@ library(hbmem)
 
 I=50
 J=100
-M=500
+M=10
 B=I+J+4
 mu=.5
 muS2=0

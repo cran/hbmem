@@ -99,8 +99,8 @@ muS2=log(c(1.3,1.5)),s2aS=.2,s2bS=.2,s2aS2=.2,s2bS2=.2)
 dat=as.data.frame(cbind(sim@subj,sim@item,sim@cond,sim@Scond,sim@lag,sim@resp))
 colnames(dat)=c("sub","item","cond","Scond","lag","resp")
 
-M=1000 #Way too low for real analysis
-keep=500:M
+M=10 #Way too low for real analysis
+keep=2:M
 uvsd=uvsdSample(dat,M=M,keep=keep,equalVar=FALSE,freeSig2=TRUE,jump=.0001,Hier=1)
 
 par(mfrow=c(3,2),pch=19,pty='s')

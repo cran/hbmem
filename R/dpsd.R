@@ -1,6 +1,3 @@
-.packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
 setClass("dpsd",representation(
                                muN="numeric",
                                alphaN="numeric",
@@ -64,8 +61,6 @@ dpsdSim=function(NN=2,NS=1,I=30,J=200,K=6,muN=c(-.7,-.5),s2aN=.2,s2bN=.2,muS=0,s
     if(((J/2)/NN)%%1 !=0 | ((J/2)/NS)%%1 !=0) cat("Number of items must be divisible by number of conditions!\n")
     if(length(muN) !=NN) cat("Length of vector of new item means muN must match NN!\n")
     if(length(muS) !=NS) cat("Length of vector of studied item means muS must match NS!\n")
-
-
 
     R=I*J
     alphaN=rnorm(I,0,sqrt(s2aN))
@@ -139,11 +134,10 @@ lag[Scond==0]=0
     return(ret)
   }
 
-
-dpsdLogLike=function(R,NN,NS,I,J,K,dat,cond,Scond,sub,item,lag,blockN,blockS,blockR,crit)
+dpsdLogLike=function(R,NN,NS,I,JN,JS,K,dat,cond,Scond,sub,item,lag,blockN,blockS,blockR,crit)
   {
     l=1:R*0
-    .C("logLikeDpsd",as.double(l),as.integer(R),as.integer(NN),as.integer(NS),as.integer(I),as.integer(J),as.integer(K),as.integer(dat),as.integer(cond),as.integer(Scond),as.integer(sub),as.integer(item),as.double(lag),as.double(blockN),as.double(blockS),as.double(blockR),as.double(as.vector(t(crit))),NAOK=TRUE,PACKAGE=.packageName)[[1]]
+.C("logLikeDpsd",as.double(l),as.integer(R),as.integer(NN),as.integer(NS),as.integer(I),as.integer(JN),as.integer(JS),as.integer(K),as.integer(dat),as.integer(cond),as.integer(Scond),as.integer(sub),as.integer(item),as.double(lag),as.double(blockN),as.double(blockS),as.double(blockR),as.double(as.vector(t(crit))),NAOK=TRUE,PACKAGE=.packageName)[[1]]
   }
 
 
@@ -156,11 +150,18 @@ item=dat$item
 lag=dat$lag
 resp=dat$resp
 
+#in case items don't appear in new and studied conditions
+tmpN=as.numeric(as.factor(item[Scond==0]))
+tmpS=as.numeric(as.factor(item[Scond==1]))
+item[Scond==0]=tmpN-1
+item[Scond==1]=tmpS-1
+
 #DEFINE CONSTANTS
 NN=length(levels(as.factor(cond[Scond==0])))
 NS=length(levels(as.factor(cond[Scond==1])))
 I=length(levels(as.factor(sub)))
-J=length(levels(as.factor(item)))
+JN=length(levels(as.factor(item[Scond==0])))
+JS=length(levels(as.factor(item[Scond==1])))
 K=length(levels(as.factor(resp)))
 ncondN=table(cond[Scond==0])
 nsubN=table(sub[Scond==0])
@@ -171,20 +172,20 @@ nitemS=table(item[Scond==1])
 R=dim(dat)[1]
 RS=sum(Scond)
 RN=R-RS
-BN=NN+I+J+3
-BS=NS+I+J+3
+BN=NN+I+JN+3
+BS=NS+I+JS+3
 
 #INDEXING
 muN=1:NN
 alphaN=(NN+1):(NN+I)
-betaN=(NN+I+1):(NN+I+J)
-s2alphaN=NN+I+J+1
+betaN=(NN+I+1):(NN+I+JN)
+s2alphaN=NN+I+JN+1
 s2betaN=s2alphaN+1
 thetaN=s2betaN+1
 muS=1:NS
 alphaS=(NS+1):(NS+I)
-betaS=(NS+I+1):(NS+I+J)
-s2alphaS=NS+I+J+1
+betaS=(NS+I+1):(NS+I+JS)
+s2alphaS=NS+I+JS+1
 s2betaS=s2alphaS+1
 thetaS=s2betaS+1
 
@@ -193,20 +194,23 @@ blockN=matrix(0,nrow=M,ncol=BN)
 blockS=blockR=matrix(0,nrow=M,ncol=BS)
 if(!Hier)
   {
-    blockN[,c(s2alphaN,s2betaN)]=2
-    blockS[,c(s2alphaS,s2betaS)]=2
-    blockR[,c(s2alphaS,s2betaS)]=2
+    blockN[,c(s2alphaN,s2betaN)]=1
+    blockS[,c(s2alphaS,s2betaS)]=1
+    blockR[,c(s2alphaS,s2betaS)]=1
     cat("Non-Hierarchical Model!\n")
-    cat("Using Prior Variances of 2.0\n\n")
+    cat("Using Prior Variances of 1\n\n")
   }
 wS=wR=rnorm(RS)
-s.crit=array(dim=c(I,7,M))
+s.crit=array(0,dim=c(I,K+1,M))
 s.crit[,1,]=-Inf
-s.crit[,4,]=0
-s.crit[,7,]=Inf
-s.crit[,,1]=matrix(rep(c(-Inf,-1,-.5,0,.5,1,Inf),each=I),ncol=7)
+s.crit[,K+1,]=Inf
+fix.crit=floor(K/2)+1
+var.crit=(2:K)[(2:K)!=fix.crit]
+s.crit[,fix.crit,]=0
+s.crit[,var.crit,1]=matrix(rep(seq(-.5,.5,length=length(var.crit)),each=I),ncol=length(var.crit))
+
 b0=matrix(0,3,2)
-met=matrix(rep(.01,6),3,2)
+met=matrix(.01,3,2)
 met.crit=rep(.05,I)
 b0.crit=rep(0,I)
 PropCrit=s.crit[,,1]
@@ -221,65 +225,68 @@ cat("Starting MCMC\n")
 #MCMC LOOP
 for(m in 2:M){
 #Sample latent data
-wN=rtnorm(RN,getPred(blockN[m-1,],cond[Scond==0],sub[Scond==0],item[Scond==0],lag[Scond==0],NN,I,J,RN),rep(1,RN),s.crit[cbind(sub[Scond==0]+1,resp[Scond==0]+1,m-1)],s.crit[cbind(sub[Scond==0]+1,resp[Scond==0]+2,m-1)])
+wN=rtnorm(RN,getPred(blockN[m-1,],cond[Scond==0],sub[Scond==0],item[Scond==0],lag[Scond==0],NN,I,JN,RN),rep(1,RN),s.crit[cbind(sub[Scond==0]+1,resp[Scond==0]+1,m-1)],s.crit[cbind(sub[Scond==0]+1,resp[Scond==0]+2,m-1)])
 
-wS[notk[Scond==1]]=rtnorm(Rnotk,getPred(blockS[m-1,],cond[notk],sub[notk],item[notk],lag[notk],NS,I,J,Rnotk),rep(1,Rnotk),s.crit[cbind(sub[notk]+1,resp[notk]+1,m-1)],s.crit[cbind(sub[notk]+1,resp[notk]+2,m-1)])
-wR[notk[Scond==1]]=rtnorm(Rnotk,getPred(blockR[m-1,],cond[notk],sub[notk],item[notk],lag[notk],NS,I,J,Rnotk),rep(1,Rnotk),rep(-Inf,Rnotk),rep(0,Rnotk))
+wS[notk[Scond==1]]=rtnorm(Rnotk,getPred(blockS[m-1,],cond[notk],sub[notk],item[notk],lag[notk],NS,I,JS,Rnotk),rep(1,Rnotk),s.crit[cbind(sub[notk]+1,resp[notk]+1,m-1)],s.crit[cbind(sub[notk]+1,resp[notk]+2,m-1)])
+wR[notk[Scond==1]]=rtnorm(Rnotk,getPred(blockR[m-1,],cond[notk],sub[notk],item[notk],lag[notk],NS,I,JS,Rnotk),rep(1,Rnotk),rep(-Inf,Rnotk),rep(0,Rnotk))
 
 ind=isk[Scond==1] & wR>0
-wS[ind]=rnorm(sum(ind),getPred(blockS[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,J,sum(ind)),1)
+wS[ind]=rnorm(sum(ind),getPred(blockS[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,JS,sum(ind)),1)
 ind=isk[Scond==1] & wR<0
-wS[ind]=rtnorm(sum(ind),getPred(blockS[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,J,sum(ind)),rep(1,sum(ind)),s.crit[cbind(sub[Scond==1][ind]+1,K,m-1)],rep(Inf,sum(ind)))
+wS[ind]=rtnorm(sum(ind),getPred(blockS[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,JS,sum(ind)),rep(1,sum(ind)),s.crit[cbind(sub[Scond==1][ind]+1,K,m-1)],rep(Inf,sum(ind)))
 
 ind=isk[Scond==1] & wS>s.crit[cbind(sub[Scond==1]+1,K,m-1)]
-wR[ind]=rnorm(sum(ind),getPred(blockR[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,J,sum(ind)),1)
+wR[ind]=rnorm(sum(ind),getPred(blockR[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,JS,sum(ind)),1)
 ind=isk[Scond==1] & wS<s.crit[cbind(sub[Scond==1]+1,K,m-1)]
-wR[ind]=rtnorm(sum(ind),getPred(blockR[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,J,sum(ind)),rep(1,sum(ind)),rep(0,sum(ind)),rep(Inf,sum(ind)))
+wR[ind]=rtnorm(sum(ind),getPred(blockR[m-1,],cond[Scond==1][ind],sub[Scond==1][ind],item[Scond==1][ind],lag[Scond==1][ind],NS,I,JS,sum(ind)),rep(1,sum(ind)),rep(0,sum(ind)),rep(Inf,sum(ind)))
 
 
 #Sample Blocks
-tmp=sampleNorm(blockN[m-1,],wN,cond[Scond==0],sub[Scond==0],item[Scond==0],lag[Scond==0],NN,I,J,RN,ncondN,nsubN,nitemN,100,.01,.01,met[1,1],met[1,2],1,1,Hier)
+tmp=sampleNorm(blockN[m-1,],wN,cond[Scond==0],sub[Scond==0],item[Scond==0],lag[Scond==0],NN,I,JN,RN,ncondN,nsubN,nitemN,100,2,1,met[1,1],met[1,2],1,1,Hier)
 blockN[m,]=tmp[[1]]
 b0[1,]=b0[1,]+tmp[[2]]
 
-tmp=sampleNorm(blockS[m-1,],wS,cond[Scond==1],sub[Scond==1],item[Scond==1],lag[Scond==1],NS,I,J,RS,ncondS,nsubS,nitemS,100,.01,.01,met[2,1],met[2,2],1,1,Hier)
+tmp=sampleNorm(blockS[m-1,],wS,cond[Scond==1],sub[Scond==1],item[Scond==1],lag[Scond==1],NS,I,JS,RS,ncondS,nsubS,nitemS,100,2,1,met[2,1],met[2,2],1,1,Hier)
 blockS[m,]=tmp[[1]]
 b0[2,]=b0[2,]+tmp[[2]]
 
-tmp=sampleNorm(blockR[m-1,],wR,cond[Scond==1],sub[Scond==1],item[Scond==1],lag[Scond==1],NS,I,J,RS,ncondS,nsubS,nitemS,100,.01,.01,met[3,1],met[3,2],1,1,Hier)
+tmp=sampleNorm(blockR[m-1,],wR,cond[Scond==1],sub[Scond==1],item[Scond==1],lag[Scond==1],NS,I,JS,RS,ncondS,nsubS,nitemS,1,2,1,met[3,1],met[3,2],1,1,Hier)
 blockR[m,]=tmp[[1]]
 b0[3,]=b0[3,]+tmp[[2]]
 
 
   if(!freeCrit)
     {
-      PropCrit[,c(2,3,5,6)]=s.crit[,c(2,3,5,6),m-1]+rep(rnorm(4,0,met.crit[1]),each=I)
-      violate=pmin(1,sum(diff(PropCrit[1,2:6])<0))
+      PropCrit[,var.crit]=s.crit[,var.crit,m-1]+rep(rnorm(length(var.crit),0,met.crit[1]),each=I)
+      violate=pmin(1,sum(diff(PropCrit[1,2:K])<0))
       if(violate) PropCrit=t(as.matrix(s.crit[,,m-1]))
 
-      likeOld=tapply(dpsdLogLike(R,NN,NS,I,J,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],s.crit[,,m-1]),sub,sum)
-      likeProp=tapply(dpsdLogLike(R,NN,NS,I,J,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],PropCrit),sub,sum)
+      likeOld=tapply(dpsdLogLike(R,NN,NS,I,JN,JS,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],s.crit[,,m-1]),sub,sum)
+      likeProp=tapply(dpsdLogLike(R,NN,NS,I,JN,JS,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],PropCrit),sub,sum)
       accept=rbinom(I,1,pmin(1,(1-violate)*exp(likeProp-likeOld)))
       b0.crit=b0.crit+accept
-      s.crit[,c(2,3,5,6),m]=accept*PropCrit[,c(2,3,5,6)] + (1-accept)*s.crit[,c(2,3,5,6),m-1]
+      s.crit[,var.crit,m]=accept*PropCrit[,var.crit] + (1-accept)*s.crit[,var.crit,m-1]
     }
 
 if(freeCrit)
   {
-                                        #Sample Criteria
-    PropCrit[,c(2,3,5,6)]=s.crit[,c(2,3,5,6),m-1]+rnorm(I*4,0,rep(met.crit,4))
-    violate=pmin(1,colSums((apply(PropCrit[,c(2,3,4,5,6)],1,diff))<0))
-    PropCrit[violate==1,]=s.crit[violate==1,,m-1]
+    PropCrit[,var.crit]=s.crit[,var.crit,m-1]+rnorm(length(var.crit)*I,0,rep(met.crit,length(var.crit)))
+    violate=pmin(1,colSums((apply(PropCrit[,2:K],1,diff))<0))
+    #PRIOR OF -7,7
+    violate=pmin(1,violate + rowSums(PropCrit[,var.crit]<(-7)) + rowSums(PropCrit[,var.crit]>7))
+ 
+   PropCrit[violate==1,]=s.crit[violate==1,,m-1]
     
-    likeOld=tapply(dpsdLogLike(R,NN,NS,I,J,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],s.crit[,,m-1]),sub,sum)
-    likeProp=tapply(dpsdLogLike(R,NN,NS,I,J,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],PropCrit),sub,sum)
+    likeOld=tapply(dpsdLogLike(R,NN,NS,I,JN,JS,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],s.crit[,,m-1]),sub,sum)
+    likeProp=tapply(dpsdLogLike(R,NN,NS,I,JN,JS,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],PropCrit),sub,sum)
     accept=rbinom(I,1,pmin(1,(1-violate)*exp(likeProp-likeOld)))
+
     b0.crit=b0.crit+accept
     s.crit[accept==1,,m]=PropCrit[accept==1,]
     s.crit[accept==0,,m]=s.crit[accept==0,,m-1]
   }
     
-                                        #AUTOTUNING
+#AUTOTUNING
 if(m>20 & m<keep[1] & m%%10==0)
   {
     met=met+(b0/m<.3)*matrix(-jump,3,2) +(b0/m>.5)*matrix(jump,3,2)
@@ -316,11 +323,11 @@ pb=txtProgressBar(min=keep[1],max=tail(keep,1),style=3,width=10)
 D0=0
 for(m in keep)
   {
-    D0=D0+sum(-2*dpsdLogLike(R,NN,NS,I,J,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],s.crit[,,m]))
+    D0=D0+sum(-2*dpsdLogLike(R,NN,NS,I,JN,JS,K,resp,cond,Scond,sub,item,lag,blockN[m,],blockS[m,],blockR[m,],s.crit[,,m]))
     setTxtProgressBar(pb, m)
   }
 D0=D0/length(keep)
-Dhat=sum(-2*dpsdLogLike(R,NN,NS,I,J,K,resp,cond,Scond,sub,item,lag,estN,estS,estR,estCrit))
+Dhat=sum(-2*dpsdLogLike(R,NN,NS,I,JN,JS,K,resp,cond,Scond,sub,item,lag,estN,estS,estR,estCrit))
 pD=D0-Dhat
 DIC=pD+D0
 }

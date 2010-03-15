@@ -77,8 +77,8 @@ sim=gammaSim(I=30,J=200)
 dat=as.data.frame(cbind(sim@subj,sim@item,sim@cond,sim@Scond,sim@lag,sim@resp))
 colnames(dat)=c("sub","item","cond","Scond","lag","resp")
 
-M=200 #set very small for demo speed
-keep=50:M
+M=10 #set very small for demo speed
+keep=2:M
 gamma=gammaSample(dat,M=M,keep=keep,jump=.01)
 
 par(mfrow=c(3,2),pch=19,pty='s')

@@ -89,8 +89,8 @@ dat=as.data.frame(cbind(sim@subj,sim@item,sim@cond,sim@Scond,sim@lag,sim@resp))
 colnames(dat)=c("sub","item","cond","Scond","lag","resp")
 dat$lag[dat$Scond==1]=dat$lag[dat$Scond==1]-mean(dat$lag[dat$Scond==1])
 
-M=200 #Too low for real analysis!
-keep=50:M
+M=10 #Too low for real analysis!
+keep=2:M
 DPSD=dpsdSample(dat,M=M)
 
 #Look at all parameters

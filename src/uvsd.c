@@ -30,7 +30,7 @@ sigma=sqrt(exp(blockS2[cond[r]]+blockS2[NS[0]+subj[r]]+blockS2[NS[0]+I[0]+item[r
 	  like[r]=log(pnorm(crit[dat[r]+1],mu,sigma,1,0)-pnorm(crit[dat[r]],mu,sigma,1,0));
 	}  
 
-      if(like[r]==-INFINITY) printf("LL = 0, DP= %lf, S2= %lf, c1= %lf, c2=%lf\n",mu,sigma,crit[dat[r]+1],crit[dat[r]]);
+      //if(like[r]==-INFINITY) printf("LL = 0, DP= %lf, S2= %lf, c1= %lf, c2=%lf\n",mu,sigma,crit[dat[r]+1],crit[dat[r]]);
     }
 }
 

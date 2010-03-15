@@ -39,7 +39,7 @@ void rtruncnorm(double *y, int *N,double *mu, double *sigma, double *a,double *b
       //sloppy fix
       if(y[n]==INFINITY | y[n]==-INFINITY)
 	{
-	  printf("Warning! RTNORM = INF; %lf %lf %lf %lf\n",mu[n],sigma[n],a[n],b[n]);
+	  //printf("Warning! RTNORM = INF; %lf %lf %lf %lf\n",mu[n],sigma[n],a[n],b[n]);
 	  y[n]=runif(a[n],b[n]);
 	}       
       

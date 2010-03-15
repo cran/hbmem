@@ -3,26 +3,26 @@
 \alias{hbmem}
 \docType{package}
 \title{Hierarchical Models of Recognition Memory}
-\description{Contains functions for fitting hierarchical versions of EVSD, UVSD,DPSD, and our gamma signal detection model to recognition memory
-confidence-ratings data.}
+\description{Contains functions for fitting hierarchical versions of EVSD, UVSD, DPSD, and our gamma signal detection model to recognition memory confidence-ratings data.}
 \details{
 \tabular{ll}{
 Package: \tab hbmem\cr
 Type: \tab Package\cr
-Version: \tab 0.2\cr
-Date: \tab 2009-08-20\cr
+Version: \tab 0.3\cr
+Date: \tab 2012-12-20\cr
 License: \tab LGPL\cr
 LazyLoad: \tab yes\cr
 }
 }
 \author{Michael S. Pratte <prattems@gmail.com>}
 \references{Morey, Pratte, and Rouder (2008); Pratte, Rouder, and Morey
-  (2009); Pratte and Rouder (in review).}
+  (2009); Pratte and Rouder (2012).}
 \keyword{ package }
 \seealso{'uvsdSample' to fit hierarchical UVSD model, 'uvsdSim' to
   simulate data from the hierarchical UVSD model, 'dpsdSample' to fit the
   hierarchial DPSD model, 'dpsdSim' to simulate data from the
-  hierarchial DPSD model, and dataset 'prm09' for some real data to fit.}
+  hierarchial DPSD model, 'dpsdPosSim' and 'dpsdPosSample' for the DPSD model 
+  with positive sensitivity, and datasets from our publications.}
 \examples{
 #In this example data are simulated from EVSD
 #They are then fit by both UVSD and DPSD
@@ -32,8 +32,8 @@ sim=uvsdSim(s2aS2=0,s2bS2=0) #Simulate data from hierarchical EVSD
 dat=as.data.frame(cbind(sim@subj,sim@item,sim@Scond,sim@cond,sim@lag,sim@resp))
 colnames(dat)=c("sub","item","Scond","cond","lag","resp")
 
-M=500 #Set way low for speed
-keep=200:M
+M=10 #Set way low for speed
+keep=2:M
 #For real analysis we run 105000 iterations
 #with the first 5000 serving as burnin, and
 #only keep every 10th iteration for analysis,

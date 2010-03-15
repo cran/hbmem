@@ -13,10 +13,12 @@ crit=matrix(rep(c(-1.6,-.5,0,.5,1.6),each=I),ncol=(K-1)))}
   \item{J}{Number of items.}
   \item{K}{Number of response options.}
   \item{muN}{Mean of new-item distribution.  If there are more than one new-item conditions this is a vector of means with length equal to NN.}
-  \item{s2aN}{Variance of participant effects on mean of new-item distribution.}  \item{s2bN}{Variance of item effects on mean of new-item distribution.}
+  \item{s2aN}{Variance of participant effects on mean of new-item distribution.}  
+  \item{s2bN}{Variance of item effects on mean of new-item distribution.}
   \item{muS}{Mean of studied-item distribution.  If there are more than
     new-item conditions this is a vector of means with length equal to NNone studied-item conditions this is a vector of means with length equal to NS.}
-  \item{s2aS}{Variance of participant effects on mean of studied-item distribution.}  \item{s2bS}{Variance of item effects on mean of studied-item distribution.}
+  \item{s2aS}{Variance of participant effects on mean of studied-item distribution.}  
+  \item{s2bS}{Variance of item effects on mean of studied-item distribution.}
   \item{muR}{Mean recollection, on probit space.}
   \item{s2aR}{Variance of participant effects recollection.}
   \item{s2bR}{Variance of item effects on recollection.}

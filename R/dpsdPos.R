@@ -1,7 +1,4 @@
-.packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
-dpsdPosSim=function(I=30,J=200,K=6,muN=-.7,s2aN=.2,s2bN=.2,muD=0,s2aD=.2,s2bD=.2,muR=qnorm(.25),s2aR=.2,s2bR=.2,crit=matrix(rep(c(-1.6,-.5,0,.5,1.6),each=I),ncol=(K-1)))
+dpsdPosSim=function(NN=1,NS=2,I=30,J=200,K=6,muN=-.7,s2aN=.2,s2bN=.2,muD=c(0,.5),s2aD=.2,s2bD=.2,muR=qnorm(c(.2,.4)),s2aR=.2,s2bR=.2,crit=matrix(rep(c(-1.6,-.5,0,.5,1.6),each=I),ncol=(K-1)))
   {
     R=I*J
     alphaN=rnorm(I,0,sqrt(s2aN))
@@ -10,29 +7,51 @@ dpsdPosSim=function(I=30,J=200,K=6,muN=-.7,s2aN=.2,s2bN=.2,muD=0,s2aD=.2,s2bD=.2
     betaD=rnorm(J,0,sqrt(s2bD))
     alphaR=rnorm(I,0,sqrt(s2aR))
     betaR=rnorm(J,0,sqrt(s2bR))
-    subj=rep(0:(I-1),each=J)
-    item=rep(0:(J-1),I)
-    lag=rep(0,R)
-    cond.sub.A=rep(0:1,J/2)
-    cond.sub.B=rep(1:0,J/2)
-    cond=rep(c(cond.sub.A,cond.sub.B),I/2)
+#make design matrix 
+Scond=cond=subj=item=lag=NULL
+
+for(i in 0:(I-1))
+{
+tmpScond=sample(rep(0:1,J/2),J)
+
+rep(0:(NN-1),(J/2)/NN)
+tmpCond=rep(-99,J)
+tmpCond[tmpScond==0]=sample(rep(0:(NN-1),(J/2)/NN),J/2)
+tmpCond[tmpScond==1]=sample(rep(0:(NS-1),(J/2)/NS),J/2)
+
+tmpSubj=rep(i,J)
+tmpItem=sample(0:(J-1),J)
+
+tmpStudy=sample(tmpItem[tmpScond==1],J/2)
+tmpLag=rep(-99,J)
+for(j in 1:J) 
+{
+for(k in 1:(J/2)) 
+{
+if(tmpStudy[k]==tmpItem[j])
+{
+tmpLag[j]=((J/2)-k) + j
+}}}
+
+Scond=c(Scond,tmpScond)
+cond=c(cond,tmpCond)
+subj=c(subj,tmpSubj)
+item=c(item,tmpItem)
+lag=c(lag,tmpLag)
+}
+
+lag[Scond==0]=0
 
     dat=1:R
     for(r in 1:R)
       {
-        meanN=muN+alphaN[subj[r]+1]+betaN[item[r]+1]
-        if(cond[r]==0) p=dpsdProbs(0,meanN,crit[subj[r]+1,])
-        if(cond[r]==1)
-          {
-            delta=exp(muD + alphaD[subj[r]+1]+betaD[item[r]+1])
-            meanS=meanN+delta
-            pR=pnorm(muR+alphaR[subj[r]+1]+betaR[item[r]+1])
-            p=dpsdProbs(pR,meanS,crit[subj[r]+1,])
-          }
-           dat[r]=which.max(rmultinom(1,1,p))-1
+        if(Scond[r]==0) p=dpsdProbs(0,muN[cond[r]+1]+alphaN[subj[r]+1]+betaN[item[r]+1],crit[subj[r]+1,])
+        if(Scond[r]==1) p=dpsdProbs(pnorm(muR[cond[r]+1]+alphaR[subj[r]+1]+betaR[item[r]+1]),muN[1]+alphaN[subj[r]+1]+betaN[item[r]+1]+exp(muD[cond[r]+1]+alphaD[subj[r]+1]+betaD[item[r]+1]),crit[subj[r]+1,])
+        dat[r]=which.max(rmultinom(1,1,p))-1
       }
      
     ret=new("dpsdSim")
+ 	 ret@Scond=Scond
     ret@cond=cond
     ret@subj=subj
     ret@item=item
@@ -50,64 +69,94 @@ dpsdPosSim=function(I=30,J=200,K=6,muN=-.7,s2aN=.2,s2bN=.2,muD=0,s2aD=.2,s2bD=.2
     return(ret)
   }
 
-
-dpsdPosLogLike=function(R,I,J,K,dat,cond,sub,item,lag,blockN,blockD,blockR,crit)
-  {
-    l=1:R*0
-    .C("logLikeDpsdPos",as.double(l),as.integer(R),as.integer(I),as.integer(J),as.integer(K),as.integer(dat),as.integer(cond),as.integer(sub),as.integer(item),as.double(lag),as.double(blockN),as.double(blockD),as.double(blockR),as.double(as.vector(t(crit))),NAOK=TRUE,PACKAGE=.packageName)[[1]]
-  }
-
+dpsdPosLogLike=function (R, NN, NS, I, JN, JS, K, dat, cond, Scond, sub, item, 
+    lag, blockN, blockD, blockR, crit) 
+{
+    l = 1:R * 0
+    .C("logLikeDpsd", as.double(l), as.integer(R), as.integer(NN), 
+        as.integer(NS), as.integer(I), as.integer(JN), as.integer(JS), 
+        as.integer(K), as.integer(dat), as.integer(cond), as.integer(Scond), 
+        as.integer(sub), as.integer(item), as.double(lag), as.double(blockN), 
+        as.double(blockD), as.double(blockR), as.double(as.vector(t(crit))), 
+        NAOK = TRUE, PACKAGE = .packageName)[[1]]
+}
 
 dpsdPosSample=function(dat,M=5000,keep=(M/10):M,getDIC=TRUE,jump=.01)
 {
+Scond=dat$Scond
 cond=dat$cond
 sub=dat$sub
 item=dat$item
 lag=dat$lag
 resp=dat$resp
 
+#in case items don't appear in new and studied conditions
+tmpN=as.numeric(as.factor(item[Scond==0]))
+tmpS=as.numeric(as.factor(item[Scond==1]))
+item[Scond==0]=tmpN-1
+item[Scond==1]=tmpS-1
 
 #DEFINE CONSTANTS
+NN=length(levels(as.factor(cond[Scond==0])))
+if(NN!=1)
+{
+	print("ERROR: Can only have 1 baseline condition")
+	break()
+}
+condN=rep(0,length(Scond))
+NS=length(levels(as.factor(cond[Scond==1])))
 I=length(levels(as.factor(sub)))
-J=length(levels(as.factor(item)))
+JN=length(levels(as.factor(item[Scond==0])))
+JS=length(levels(as.factor(item[Scond==1])))
+J=max(c(JN,JS))
 K=length(levels(as.factor(resp)))
+ncondN=table(cond[Scond==0])
 nsubT=table(sub)
 nitemT=table(item)
-nsubS=table(sub[cond==1])
-nitemS=table(item[cond==1])
+ncondS=table(cond[Scond==1])
+nsubS=table(sub[Scond==1])
+nitemS=table(item[Scond==1])
 R=dim(dat)[1]
-RS=sum(cond)
-RN=R-sum(cond)
-B=I+J+4
+RS=sum(Scond)
+RN=R-RS
+BN=NN+I+JN+3
+BS=NS+I+JS+3
 
 #INDEXING
-mu=1
-alpha=2:(I+1)
-beta=(max(alpha)+1):(I+J+1)
-s2alpha=max(beta)+1
-s2beta=s2alpha+1
-theta=s2beta+1
+muN=1:NN
+alphaN=(NN+1):(NN+I)
+betaN=(NN+I+1):(NN+I+JN)
+s2alphaN=NN+I+JN+1
+s2betaN=s2alphaN+1
+thetaN=s2betaN+1
+muS=1:NS
+alphaS=(NS+1):(NS+I)
+betaS=(NS+I+1):(NS+I+JS)
+s2alphaS=NS+I+JS+1
+s2betaS=s2alphaS+1
+thetaS=s2betaS+1
 
 #SPACE AND STARTING VALUES
-blockN=blockD=blockR=matrix(0,nrow=M,ncol=B)
+blockN=matrix(0,nrow=M,ncol=BN)
+blockD=blockR=matrix(0,nrow=M,ncol=BS)
 wS=wR=rnorm(RS)
 allwN=rnorm(R)
-s.crit=array(dim=c(I,7,M))
+s.crit=array(0,dim=c(I,K+1,M))
 s.crit[,1,]=-Inf
-s.crit[,4,]=0
-s.crit[,7,]=Inf
+s.crit[,K+1,]=Inf
 s.crit[,,1]=matrix(rep(c(-Inf,-1,-.5,0,.5,1,Inf),each=I),ncol=7)
+
 b0=matrix(0,2,2)
 met=matrix(.01,2,2)
-b0D=rep(0,B)
-metD=c(.01,rep(.2,(B-4)),.05,.05,.01)
+b0D=rep(0,BS)
+metD=c(.01,rep(.2,(BS-4)),.05,.05,.01)
 met.crit=rep(.05,I)
 b0.crit=rep(0,I)
 PropCrit=s.crit[,,1]
 
-notk=cond==1 & resp<(K-1)
+notk=Scond==1 & resp<(K-1)
 Rnotk=sum(notk)
-isk= cond==1 & resp==(K-1) 
+isk= Scond==1 & resp==(K-1) 
 Risk=sum(isk)
 
 pb=txtProgressBar(min=1,max=M,style=3,width=10)
@@ -115,29 +164,30 @@ print("Starting MCMC")
 #MCMC LOOP
 for(m in 2:M){
 #Sample latent data
-meanN=getPred(blockN[m-1,],sub,item,lag,I,J,R)
-meanD=exp(getPred(blockD[m-1,],sub,item,lag,I,J,R))
-meanS=meanN+meanD
-meanR=getPred(blockR[m-1,],sub,item,lag,I,J,R)
+meanN=getPred(blockN[m-1,],rep(0,length(sub)),sub,item,lag,1,I,J,R)
+meanD=exp(getPred(blockD[m-1,],cond[Scond==1],sub[Scond==1],item[Scond==1],lag[Scond==1],NS,I,JS,RS))
+meanS=meanN[Scond==1]+meanD
+meanR=getPred(blockR[m-1,],cond[Scond==1],sub[Scond==1],item[Scond==1],lag[Scond==1],NS,I,JS,RS)
 
-wN=rtnorm(RN,meanN[cond==0],rep(1,RN),s.crit[cbind(sub[cond==0]+1,resp[cond==0]+1,m-1)],s.crit[cbind(sub[cond==0]+1,resp[cond==0]+2,m-1)])
+wN=rtnorm(RN,meanN[Scond==0],rep(1,RN),s.crit[cbind(sub[Scond==0]+1,resp[Scond==0]+1,m-1)],s.crit[cbind(sub[Scond==0]+1,resp[Scond==0]+2,m-1)])
 
-wS[notk[cond==1]]=rtnorm(Rnotk,meanS[notk],rep(1,RN),s.crit[cbind(sub[notk]+1,resp[notk]+1,m-1)],s.crit[cbind(sub[notk]+1,resp[notk]+2,m-1)])
-wR[notk[cond==1]]=rtnorm(Rnotk,meanR[notk],rep(1,Rnotk),rep(-Inf,Rnotk),rep(0,Rnotk))
+wS[notk[Scond==1]]=rtnorm(Rnotk,meanS[notk],rep(1,Rnotk),s.crit[cbind(sub[notk]+1,resp[notk]+1,m-1)],s.crit[cbind(sub[notk]+1,resp[notk]+2,m-1)])
+wR[notk[Scond==1]]=rtnorm(Rnotk,meanR[notk],rep(1,Rnotk),rep(-Inf,Rnotk),rep(0,Rnotk))
 
-ind=isk[cond==1] & wR>0
-wS[ind]=rnorm(sum(ind),meanS[cond==1][ind],1)
-ind=isk[cond==1] & wR<0
-wS[ind]=rtnorm(sum(ind),meanS[cond==1][ind],rep(1,sum(ind)),s.crit[cbind(sub[cond==1][ind]+1,K,m-1)],rep(Inf,sum(ind)))
+ind=isk[Scond==1] & wR>0
+wS[ind]=rnorm(sum(ind),meanS[ind],1)
+ind=isk[Scond==1] & wR<0
+wS[ind]=rtnorm(sum(ind),meanS[ind],rep(1,sum(ind)),s.crit[cbind(sub[ind]+1,K,m-1)],rep(Inf,sum(ind)))
 
-ind=isk[cond==1] & wS>s.crit[cbind(sub[cond==1]+1,K,m-1)]
-wR[ind]=rnorm(sum(ind),meanR[cond==1][ind],1)
-ind=isk[cond==1] & wS<s.crit[cbind(sub[cond==1]+1,K,m-1)]
-wR[ind]=rtnorm(sum(ind),meanR[cond==1][ind],rep(1,sum(ind)),rep(0,sum(ind)),rep(Inf,sum(ind)))
+ind=isk[Scond==1] & wS>s.crit[cbind(sub[Scond==1]+1,K,m-1)]
+wR[ind]=rnorm(sum(ind),meanR[ind],1)
+ind=isk[Scond==1] & wS<s.crit[cbind(sub[Scond==1]+1,K,m-1)]
+wR[ind]=rtnorm(sum(ind),meanR[ind],rep(1,sum(ind)),rep(0,sum(ind)),rep(Inf,sum(ind)))
 
+###MIKE LEFT OFF HERE TO GO SEE TRON###
 
 #Sample Blocks
-wD=wS-meanN[cond==1]
+wD=wS-meanN[Scond==1]
 tmp=samplePosNorm(blockD[m-1,],wD,sub[cond==1],item[cond==1],lag[cond==1],I,J,RS,10,.01,.01,metD,1,1)
 blockD[m,]=tmp[[1]]
 b0D=b0D+tmp[[2]]
@@ -217,12 +267,18 @@ DIC=pD+D0
 
 
 u=new("dpsd")
-u@mu=mu
-u@alpha=alpha
-u@beta=beta
-u@s2alpha=s2alpha
-u@s2beta=s2beta
-u@theta=theta
+u@muN=muN
+u@alphaN=alphaN
+u@betaN=betaN
+u@s2alphaN=s2alphaN
+u@s2betaN=s2betaN
+u@thetaN=thetaN
+u@muS=muS
+u@alphaS=alphaS
+u@betaS=betaS
+u@s2alphaS=s2alphaS
+u@s2betaS=s2betaS
+u@thetaS=thetaS
 u@estN=estN
 u@estS=estD
 u@estR=estR

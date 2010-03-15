@@ -4,15 +4,17 @@
 \description{Samples posterior of mean parameters of the positive hierarchical
   linear normal model with a single Sigma2
 $(x = N(exp(mu+alpha_i+beta_j),sigma2))$.}
-\usage{samplePosNorm(sample, y, sub, item, lag, I, J, R, 
+\usage{samplePosNorm(sample, y, cond, sub, item, lag, N, I, J, R, 
     sig2mu, a, b, met, sigma2, sampLag)}
 
 \arguments{
 \item{sample}{Block of linear model parameters from previous iteration.}
 \item{y}{Vector of data}
+\item{cond}{Vector of condition index.}
 \item{sub}{Vector of subject index, starting at zero.}
 \item{item}{Vector of item index, starting at zero.}
 \item{lag}{Vector of lag index, zero-centered.}
+\item{N}{Number of conditions.}
 \item{I}{Number of subjects.}
 \item{J}{Number of items.}
 \item{R}{Total number of trials.}
@@ -41,33 +43,35 @@ $(x = N(exp(mu+alpha_i+beta_j),sigma2))$.}
 \examples{
 library(hbmem)
 
-I=25
-J=40
-R=I*J
+N=3
+I=50
+J=100
+R=N*I*J
 t.sigma2=3
-t.mu=.5
+t.mu=c(-1,0,1)
 t.sig2alpha=.2
 t.sig2beta=.6
 t.alpha=rnorm(I,0,sqrt(t.sig2alpha))
 t.beta =rnorm(J,0,sqrt(t.sig2beta))
 t.theta=-.5
-sub=rep(0:(I-1),each=J)
-item=rep(0:(J-1),I)
+cond=sample((0:(N-1)),R,replace=TRUE)
+sub=rep(rep(0:(I-1),each=J),N)
+item=rep(rep(0:(J-1),I),N)
 lag=scale(rnorm(R,0,sqrt(t.sigma2)/10))
 
 tmean=1:R
-for(r in 1:R) tmean[r]=exp(t.mu+t.alpha[sub[r]+1]+t.beta[item[r]+1]+t.theta*lag[r])
+for(r in 1:R) tmean[r]=exp(t.mu[cond[r]+1]+t.alpha[sub[r]+1]+t.beta[item[r]+1]+t.theta*lag[r])
 y=rnorm(R,tmean,sqrt(t.sigma2))
 
-M=1000 #Way too low for real analysis!
-B=I+J+4
+M=10 #Way too low for real analysis!
+B=N+I+J+3
 block=matrix(0,nrow=M,ncol=B)
 met=rep(.1,B);jump=.0001
 b0=rep(0,B)
-keep=500:M
+keep=2:M
 for(m in 2:M)
 {
-  tmp= samplePosNorm(block[m-1,],y,sub,item,lag,I,J,R,100,.01,.01,met,t.sigma2,1)
+  tmp= samplePosNorm(block[m-1,],y,cond,sub,item,lag,N,I,J,R,1,.01,.01,met,t.sigma2,1)
   block[m,]=tmp[[1]]
   b0=b0+tmp[[2]]
 
@@ -76,27 +80,34 @@ for(m in 2:M)
    met=met+(b0/m<.3)*-jump +(b0/m>.5)*jump
    met[met<jump]=jump
   }
+      #if(m%%100==0) print(m)
 }
 
 est=colMeans(block[keep,])
 b0/M
 
 par(mfrow=c(3,2))
-plot(exp(block[keep,1]),t='l',main="Mu",ylab="Mu")
+est.mu=est[1:N]
+matplot(exp(block[keep,1:N]),t='l',main="Mu",ylab="Mu")
 abline(h=exp(t.mu),col="blue")
-abline(h=mean(y),col="green")
+#abline(h=tapply(y,cond,mean),col="green")
 acf(block[keep,1],main="ACF of Mu")
 
-est.alpha=est[2:(I+1)]
+est.alpha=est[(N+1):(N+I)]
 plot(est.alpha~t.alpha,ylab="Est. Alpha",xlab="True Alpha");abline(0,1)
-est.beta=est[(I+2):(I+J+1)]
+est.beta=est[(N+I+1):(N+I+J)]
 plot(est.beta~t.beta,ylab="Est. Beta",xlab="True Beta");abline(0,1)
 
-plot(block[keep,(I+J+4)],t='l',main="Theta",ylab="Theta")
+est.theta=est[N+I+J+3]
+plot(block[keep,(N+I+J+3)],t='l',main="Theta",ylab="Theta")
 abline(h=t.theta,col="blue")
 
-plot(density(block[keep,(I+J+2)]),col="red",main="Posterior of Variances",xlim=c(0,1))
+plot(density(block[keep,(N+I+J+1)]),col="red",main="Posterior of Variances",xlim=c(0,1))
 abline(v=t.sig2alpha,col="red")
-lines(density(block[keep,(I+J+3)]),col="blue")
+lines(density(block[keep,(N+I+J+2)]),col="blue")
 abline(v=t.sig2beta,col="blue")
+
+
+
+
 }

@@ -79,8 +79,8 @@ ncond=table(cond)
 nsub=table(subj)
 nitem=table(item)
 
-M=500
-keep=200:M
+M=10
+keep=2:M
 B=N+I+J+3
 s.block=matrix(0,nrow=M,ncol=B)
 met=rep(.08,B)

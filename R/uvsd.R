@@ -1,6 +1,3 @@
-.packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
 setClass("uvsd",representation(
                                muN="numeric",
 			       alphaN="numeric",

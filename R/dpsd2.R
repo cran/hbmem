@@ -1,7 +1,3 @@
-.packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
-
 sampleNorm2 = function(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,meta,metb,sigma2,sampLag=1,Hier=1)
 {
 b0=c(0,0)
@@ -62,7 +58,7 @@ if(!Hier)
     blockS[,c(s2alphaS,s2betaS)]=2
     blockR[,c(s2alphaS,s2betaS)]=.5
     cat("Non-Hierarchical Model!\n")
-    cat("Using Prior Variances of 2.0\n\n")
+    cat("Using Prior Variances of 2.0 & .5 on Rec\n\n")
   }
 wS=wR=rnorm(RS)
 s.crit=array(dim=c(I,7,M))

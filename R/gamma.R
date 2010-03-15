@@ -1,6 +1,3 @@
-.packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
 gammaProbs=function(scale,shape,bounds)
 {
 cumulative=c(0,pgamma(bounds,shape=shape,scale=scale),1)

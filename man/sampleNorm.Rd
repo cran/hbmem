@@ -57,13 +57,17 @@ I=20
 J=50
 R=I*J
 #make some data
-dat=normalSim(N=N,I=I,J=J,mu=t.mu,s2a=2,s2b=2,muS2=log(1),s2aS2=0,s2bS2=0)
+tmp=normalSim(N=N,I=I,J=J,mu=t.mu,s2a=2,s2b=2,muS2=log(1),s2aS2=0,s2bS2=0)
+dat=tmp[[1]]
+t.alpha=tmp[[2]]
+t.beta=tmp[[3]]
+
 ncond=table(dat$cond)
 nsub=table(dat$sub)
 nitem=table(dat$item)
 
-M=2000
-keep=1000:M
+M=10
+keep=2:M
 B=N+I+J+3
 s.block=matrix(0,nrow=M,ncol=B)
 met=c(.1,.1);b0=c(0,0)

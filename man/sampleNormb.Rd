@@ -79,7 +79,7 @@ attach(sim)
 plot(resp~lag)
 
 ########MCMC SETUP##########
-blockS=blockS2=matrix(0,nrow=1000,ncol=B)
+blockS=blockS2=matrix(0,nrow=10,ncol=B)
 blockS[,B-1]=blockS[,B-2]=blockS2[,B-1]=blockS2[,B-2]=.5
 b0mean=c(0,0)
 b0S2=rep(0,B)
@@ -89,7 +89,7 @@ ncond=table(cond)
 nsub=table(subj)
 nitem=table(item)
 
-for(m in 2:1000) #way to low for real analysis
+for(m in 2:10) #way to low for real analysis
   {
     tmp=sampleNormb(blockS[m-1,],resp,cond,subj,item,lag,N,I,J,I*J,ncond,nsub,nitem,10,.01,.01,.02,.005,blockS2[m-1,],1,1)
     blockS[m,]=tmp[[1]]
@@ -98,7 +98,7 @@ for(m in 2:1000) #way to low for real analysis
     tmp=sampleSig2b(blockS2[m-1,],resp,cond,subj,item,lag,N,I,J,I*J,ncond,nsub,nitem,10,.01,.01,met,blockS[m,],1,1)
     blockS2[m,]=tmp[[1]]
     b0S2=b0S2+tmp[[2]]
-   if(m<1000) met=met+(b0S2/m<.3)*-jump +(b0S2/m>.5)*jump
+   if(m<10) met=met+(b0S2/m<.3)*-jump +(b0S2/m>.5)*jump
     met[met<jump]=jump
 #met[B]=.0001
   }

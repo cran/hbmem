@@ -1,11 +1,9 @@
 .packageName='hbmem'
-.First.lib=function(lib,pkg) library.dynam('hbmem',pkg,lib)
-
+	
 #Nice plotting params.
 defpar=function(r,c)
 {
-  list(mfrow=c(r,c),pty='s',pch=19,mar=c(4,4,3,.2),mgp=c(2.0,.6,0),cex=1.15,pty=
-'s')
+  list(mfrow=c(r,c),pty='s',pch=19,mar=c(4,4,3,.2),mgp=c(2.0,.6,0),cex=1.15,pty='s')
 }
 
 #Truncated Normal
@@ -19,7 +17,7 @@ rtnorm=function(N,mu,sigma,a,b)
 getPred=function(block,cond,sub,item,lag,N,I,J,R)
   {
     pred=1:R
-    tmp=.C("getPred",as.double(pred),as.double(block),as.integer(cond),as.integer(sub),as.integer(item),as.double(lag),as.integer(N),as.integer(I),as.integer(J),as.integer(R),PACKAGE=.packageName)
+tmp=.C("getPred",as.double(pred),as.double(block),as.integer(cond),as.integer(sub),as.integer(item),as.double(lag),as.integer(N),as.integer(I),as.integer(J),as.integer(R),PACKAGE=.packageName)
     return(tmp[[1]])
   }
 
@@ -31,10 +29,7 @@ normalSim=function(N=1,I=30,J=300,mu=0,s2a=.2,s2b=.2,muS2=0,s2aS2=0,s2bS2=0)
   beta=rnorm(J,0,sqrt(s2b))
   alphaS2=rnorm(I,0,sqrt(s2aS2))
   betaS2=rnorm(J,0,sqrt(s2bS2))
- 
-t.alpha<<-alpha
-t.beta<<-beta
-cat("Variables t.alpha and t.beta now true values\n")
+
 cond=sample(0:(N-1),R,replace=TRUE)
 subj=rep(0:(I-1),each=J)
 item=NULL
@@ -49,9 +44,9 @@ item=c(item,sample(0:(J-1),J,replace=FALSE))
         sd=sqrt(exp(muS2+alphaS2[subj[r]+1]+betaS2[item[r]+1]))
         resp[r]=rnorm(1,mean,sd)
       }
-return(as.data.frame(cbind(cond,subj,item,lag,resp)))
-  
- } 
+out=as.data.frame(cbind(cond,subj,item,lag,resp))      
+return(list(out,alpha,beta))
+} 
 
 #BLOCK MEANS WITH ONE VARIANCE AND CONDITION EFFECTS
 sampleNorm = function(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,meta,metb,sigma2,sampLag=TRUE,Hier=TRUE)
@@ -106,34 +101,35 @@ return(.C("sampleSigma2",as.double(sig2),as.double(block),as.double(y),as.intege
 
 ###########################
 #NORMAL WITH POSITIVE MEAN#
-nplike=function(x,mu,alpha,beta,theta,sub,item,lag,sigma2)
+###########################
+nplike=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2)
 {
-mean=exp(mu+alpha[sub+1]+beta[item+1]+theta*lag)
+mean=exp(mu[cond+1]+alpha[sub+1]+beta[item+1]+theta*lag)
 return((mean^2 - 2*x*mean)/(-2*sigma2))
 }
 
-ld.mu=function(x,mu,alpha,beta,theta,sub,item,lag,sig2mu,sigma2)
-return(sum(nplike(x,mu,alpha,beta,theta,sub,item,lag,sigma2)) - .5*(mu^2/sig2mu))
+ld.mu=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2mu,sigma2)
+return(tapply(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2),cond,sum) - .5*(mu^2/sig2mu))
 
-ld.alpha=function(x,mu,alpha,beta,theta,sub,item,lag,sig2alpha,sigma2)
-return(tapply(nplike(x,mu,alpha,beta,theta,sub,item,lag,sigma2),sub,sum) - .5*(alpha^2/sig2alpha))
+ld.alpha=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2alpha,sigma2)
+return(tapply(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2),sub,sum) - .5*(alpha^2/sig2alpha))
 
-ld.beta=function(x,mu,alpha,beta,theta,sub,item,lag,sig2beta,sigma2)
-return(tapply(nplike(x,mu,alpha,beta,theta,sub,item,lag,sigma2),item,sum) - .5*(beta^2/sig2beta))
+ld.beta=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2beta,sigma2)
+return(tapply(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2),item,sum) - .5*(beta^2/sig2beta))
 
-ld.theta=function(x,mu,alpha,beta,theta,sub,item,lag,sig2theta,sigma2)
-return(sum(nplike(x,mu,alpha,beta,theta,sub,item,lag,sigma2)) - .5*(theta^2/sig2theta))
+ld.theta=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2theta,sigma2)
+return(sum(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2)) - .5*(theta^2/sig2theta))
 
 
-samplePosNorm=function(sample,y,sub,item,lag,I,J,R,sig2mu,a,b,met,sigma2,sampLag)
+samplePosNorm=function(sample,y,cond,sub,item,lag,N,I,J,R,sig2mu,a,b,met,sigma2,sampLag)
   {
     b0=rep(0,length(met))
-    s.mu=sample[1]
-    s.alpha=sample[2:(I+1)]
-    s.beta=sample[(I+2):(I+J+1)]
-    s.s2alpha=sample[(I+J+1)+1]
-    s.s2beta=sample[(I+J+1)+2]
-    s.theta=sample[(I+J+1)+3]
+    s.mu=sample[1:N]
+    s.alpha=sample[(N+1):(N+I)]
+    s.beta=sample[(N+I+1):(N+I+J)]
+    s.s2alpha=sample[N+I+J+1]
+    s.s2beta=sample[N+I+J+2]
+    s.theta=sample[N+I+J+3]
 
   
 #SAMPLE VARIANCES
@@ -143,43 +139,43 @@ postB=sum(s.beta^2)/2 + b
 s.s2beta=1/rgamma(1,shape=(a+J/2),scale=1/postB)
 
 #SAMPLE MU
-prop=s.mu+rnorm(1,0,met[1])
-oldLike=ld.mu(y,s.mu, s.alpha,s.beta,s.theta,sub,item,lag,sig2mu,sigma2)
-propLike=ld.mu(y,prop,s.alpha,s.beta,s.theta,sub,item,lag,sig2mu,sigma2)
-accept= rbinom(1,1,pmin(1,exp(propLike-oldLike)))
+prop=s.mu+rnorm(N,0,met[1:N])
+oldLike=ld.mu(y,s.mu, s.alpha,s.beta,s.theta,cond,sub,item,lag,sig2mu,sigma2)
+propLike=ld.mu(y,prop,s.alpha,s.beta,s.theta,cond,sub,item,lag,sig2mu,sigma2)
+accept= rbinom(N,1,pmin(1,exp(propLike-oldLike)))
 s.mu=ifelse(accept,prop,s.mu)
-b0[1]=b0[1]+accept
+b0[1:N]=b0[1:N]+accept
 #SAMPLE ALPHA
-prop=s.alpha+rnorm(I,0,met[2:(1+I)])
-oldLike= ld.alpha(y,s.mu,s.alpha,s.beta,s.theta,sub,item,lag,s.s2alpha,sigma2)
-propLike=ld.alpha(y,s.mu,prop,   s.beta,s.theta,sub,item,lag,s.s2alpha,sigma2)
+prop=s.alpha+rnorm(I,0,met[(N+1):(N+I)])
+oldLike= ld.alpha(y,s.mu,s.alpha,s.beta,s.theta,cond,sub,item,lag,s.s2alpha,sigma2)
+propLike=ld.alpha(y,s.mu,prop,   s.beta,s.theta,cond,sub,item,lag,s.s2alpha,sigma2)
 accept= rbinom(I,1,pmin(1,exp(propLike-oldLike)))
 s.alpha=ifelse(accept,prop,s.alpha)
-b0[2:(1+I)]=b0[2:(1+I)]+accept
+b0[(N+1):(N+I)]=b0[(N+1):(N+I)]+accept
 #SAMPLE BETA
-prop=s.beta+rnorm(J,0,met[(2+I):(I+J+1)])
-oldLike=ld.beta (y,s.mu,s.alpha,s.beta,s.theta,sub,item,lag,s.s2beta,sigma2)
-propLike=ld.beta(y,s.mu,s.alpha,prop  ,s.theta,sub,item,lag,s.s2beta,sigma2)
+prop=s.beta+rnorm(J,0,met[(N+I+1):(N+I+J)])
+oldLike=ld.beta (y,s.mu,s.alpha,s.beta,s.theta,cond,sub,item,lag,s.s2beta,sigma2)
+propLike=ld.beta(y,s.mu,s.alpha,prop  ,s.theta,cond,sub,item,lag,s.s2beta,sigma2)
 accept= rbinom(J,1,pmin(1,exp(propLike-oldLike)))
 s.beta=ifelse(accept,prop,s.beta)
-b0[(2+I):(I+J+1)]=b0[(2+I):(I+J+1)] + accept
+b0[(N+I+1):(N+I+J)]=b0[(N+I+1):(N+I+J)] + accept
 
 #DECORR
 #mu and alpha
-shift=rnorm(1,0,met[I+J+2])
+shift=rnorm(1,0,met[N+I+J+1])
 muProp=s.mu+shift
 aProp=s.alpha-shift
-p=(sum(s.alpha^2)-sum(aProp^2))/(2*s.s2alpha) + (s.mu^2-muProp^2)/(2*sig2mu)
+p=(sum(s.alpha^2)-sum(aProp^2))/(2*s.s2alpha) + (sum(s.mu^2)-sum(muProp^2))/(2*sig2mu)
 accept= rbinom(1,1,pmin(1,exp(p)))
 if(accept)
   {
     s.mu=muProp
     s.alpha=aProp
-    b0[I+J+2]=b0[I+J+2]+1
+    b0[N+I+J+1]=b0[N+I+J+1]+1
   }
 
 #alpha and beta
-shift=rnorm(1,0,met[I+J+3])
+shift=rnorm(1,0,met[N+I+J+2])
 aProp=s.alpha+shift
 bProp=s.beta-shift
 p=(sum(s.alpha^2)-sum(aProp^2))/(2*s.s2alpha) + (sum(s.beta^2)-sum(bProp^2))/(2*s.s2beta) 
@@ -188,25 +184,25 @@ if(accept)
   {
     s.alpha=aProp
     s.beta=bProp
-    b0[I+J+3]=b0[I+J+3]+1
+    b0[N+I+J+2]=b0[N+I+J+2]+1
   }
 
 #SAMPLE THETA
 if(sampLag){
-prop=s.theta+rnorm(1,0,met[I+J+4])
-oldLike=ld.theta (y,s.mu,s.alpha,s.beta,s.theta,sub,item,lag,sig2mu,sigma2)
-propLike=ld.theta(y,s.mu,s.alpha,s.beta,prop   ,sub,item,lag,sig2mu,sigma2)
+prop=s.theta+rnorm(1,0,met[N+I+J+3])
+oldLike=ld.theta (y,s.mu,s.alpha,s.beta,s.theta,cond,sub,item,lag,sig2mu,sigma2)
+propLike=ld.theta(y,s.mu,s.alpha,s.beta,prop   ,cond,sub,item,lag,sig2mu,sigma2)
 accept= rbinom(1,1,pmin(1,exp(propLike-oldLike)))
 s.theta=ifelse(accept,prop,s.theta)
-b0[I+J+4]=b0[I+J+4] + accept
+b0[N+I+J+3]=b0[N+I+J+3] + accept
 }
     
-    sample[1]=s.mu
-    sample[2:(I+1)]=s.alpha
-    sample[(I+2):(I+J+1)]=s.beta
-    sample[I+J+2]=s.s2alpha
-    sample[I+J+3]=s.s2beta
-    sample[I+J+4]=s.theta
+    sample[1:N]=s.mu
+    sample[(N+1):(N+I)]=s.alpha
+    sample[(N+I+1):(N+I+J)]=s.beta
+    sample[N+I+J+1]=s.s2alpha
+    sample[N+I+J+2]=s.s2beta
+    sample[N+I+J+3]=s.theta
 
     return(list(sample,b0))
 }

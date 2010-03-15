@@ -30,5 +30,5 @@ dpsdRNSample(dat, M = 5000, keep = (M/10):M, getDIC = TRUE, jump = 0.001)
     addition to adjusting "jump", simply increase the burnin period
     which will allow the function more time to self-tune.}  
 }
-\references{Pratte and Rouder (in review)}
+\references{Pratte and Rouder (2010)}
 \keyword{models}
