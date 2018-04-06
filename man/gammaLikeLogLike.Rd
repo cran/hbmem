@@ -4,7 +4,8 @@
 \description{Function that gives the log likelihood for the gamma model
   with criteria on likelihood space.}
 \usage{
-gammaLikeLogLike(R, NN, NS, I, J, K, dat, cond, Scond, subj, item, lag, blockN, blockS, crit, shape)
+gammaLikeLogLike(R, NN, NS, I, J, K, dat, cond, Scond, subj,
+item, lag, blockN, blockS, crit, shape)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

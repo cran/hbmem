@@ -3,7 +3,8 @@
 \title{Function gammaLogLike}
 \description{Returns the log likelihood for the gamma Signal Detection model.}
 \usage{
-gammaLogLike(R, NN, NS, I, J, K, dat, cond, Scond, subj, item, lag, blockN, blockS, crit, shape)
+gammaLogLike(R, NN, NS, I, J, K, dat, cond, Scond, subj,
+item, lag, blockN, blockS, crit, shape)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -3,7 +3,8 @@
 \title{Function cond.thetaD}
 \description{Conditional posterior for models with positive d'}
 \usage{
-cond.thetaD(wD, muD, alphaD, betaD, thetaD, wR, muR, alphaR, betaR, sub, item, lag, sig2theta)
+cond.thetaD(wD, muD, alphaD, betaD, thetaD, wR, muR, alphaR,
+betaR, sub, item, lag, sig2theta)
 }
 \arguments{
   \item{wD}{ ~~Describe \code{wD} here~~ }

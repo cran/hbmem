@@ -3,7 +3,10 @@
 \title{Function dpsdRNSim}
 \description{Simulate data from DPSD model with R a function of N}
 \usage{
-dpsdRNSim(NN = 2, NS = 1, I = 30, J = 200, K = 6, muN = c(-0.7, -0.5), s2aN = 0.2, s2bN = 0.2, muS = 0, s2aS = 0.2, s2bS = 0.2, muR = qnorm(0.25), phiA = -1, phiB = -1, crit = matrix(rep(c(-1.6, -0.5, 0, 0.5, 1.6), each = I), ncol = (K - 1)))
+dpsdRNSim(NN = 2, NS = 1, I = 30, J = 200, K = 6, muN = c(-0.7, -0.5),
+s2aN = 0.2, s2bN = 0.2, muS = 0, s2aS = 0.2, s2bS = 0.2,
+muR = qnorm(0.25), phiA = -1, phiB = -1,
+crit = matrix(rep(c(-1.6, -0.5, 0, 0.5, 1.6), each = I), ncol = (K - 1)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

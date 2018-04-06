@@ -5,7 +5,9 @@
 \description{Simulates data from gamma model with criteria on likelihood
 space.}
 \usage{
-gammaLikeSim(NN = 1, NS = 1, I = 30, J = 200, K = 6, muS = log(0.5), s2aS = 0.2, s2bS = 0.2, lagEffect = 0, shape = 2, crit = matrix(rep(c(0.75, 0.8, 1, 1.35, 1.6), each = I), ncol = (K - 1)))
+gammaLikeSim(NN = 1, NS = 1, I = 30, J = 200, K = 6, muS = log(0.5),
+s2aS = 0.2, s2bS = 0.2, lagEffect = 0, shape = 2,
+crit = matrix(rep(c(0.75, 0.8, 1, 1.35, 1.6), each = I), ncol = (K - 1)))
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

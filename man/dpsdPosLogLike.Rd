@@ -3,7 +3,8 @@
 \title{function dpsdPosLogLike}
 \description{Computes log likelihood for DPSD model with positive d'}
 \usage{
-dpsdPosLogLike(R, NN, NS, I, JN, JS, K, dat, cond, Scond, sub, item,lag, blockN, blockD, blockR, crit)
+dpsdPosLogLike(R, NN, NS, I, JN, JS, K, dat, cond,
+Scond, sub, item,lag, blockN, blockD, blockR, crit)
 }
 \arguments{
 \item{R}{Total number of trials.}

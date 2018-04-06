@@ -37,7 +37,7 @@ void rtruncnorm(double *y, int *N,double *mu, double *sigma, double *a,double *b
 
                
       //sloppy fix
-      if(y[n]==INFINITY | y[n]==-INFINITY)
+      if((y[n]==INFINITY) || (y[n]==-INFINITY))
 	{
 	  //printf("Warning! RTNORM = INF; %lf %lf %lf %lf\n",mu[n],sigma[n],a[n],b[n]);
 	  y[n]=runif(a[n],b[n]);
@@ -142,7 +142,7 @@ void sampleNormal(double *block,double *dat,int *cond, int *subj, int *item,doub
   }
 
   //Decorrelate Alpha and Beta
-  if(I[0]>1 & J[0]>1){
+  if((I[0]>1) && (J[0]>1)){
   shift=rnorm(0,sqrt(s2decor2[0]));
   for(i=0;i<I[0];i++) aProp[i]=alpha[i]+shift;
   for(j=0;j<J[0];j++) bProp[j]=beta[j]-shift;
@@ -317,7 +317,7 @@ void sampleNormalb(double *block,double *dat,int *cond,int *subj, int *item,doub
   }
 
   //Decorrelate Alpha and Beta
-  if(I[0]>1 & J[0]>1){
+  if((I[0]>1) && (J[0]>1)){
   shift=rnorm(0,sqrt(s2decor2[0]));
   for(i=0;i<I[0];i++) aProp[i]=alpha[i]+shift;
   for(j=0;j<J[0];j++) bProp[j]=beta[j]-shift;
@@ -490,7 +490,7 @@ void sampleSigma2b(double *blockS2,double *dat,int *cond,int *subj, int *item,do
   }
   
   //Decorrelate Alpha and Beta
-  if(I[0]>1 & J[0]>1){
+  if((I[0]>1) && (J[0]>1)){
     shift=rnorm(0,met[N[0]+I[0]+J[0]+1]);
   for(i=0;i<I[0];i++) aProp[i]=alpha[i]+shift;
   for(j=0;j<J[0];j++) bProp[j]=beta[j]-shift;
@@ -596,7 +596,7 @@ void sampleNormalR(double *block,double *phi,double *blockD,double *dat,int *sub
   
   //Decorrelate Alpha and Beta
   if(1==0){
-  if(I[0]>1 & J[0]>1){
+    if((I[0]>1) && (J[0]>1)){
     sumY=0;
     sumYprop=0;
     shift=rnorm(0,sqrt(s2decor2[0]));

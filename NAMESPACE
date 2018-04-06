@@ -1,4 +1,4 @@
-useDynLib("hbmem")
+useDynLib("hbmem",.registration=TRUE)
 
 # Export all names
 exportPattern(".")
@@ -7,3 +7,6 @@ exportPattern(".")
 import(
   methods
 )
+importFrom("stats", "pgamma", "pnorm", "qnorm", "rbinom", "rgamma",
+             "rmultinom", "rnorm")
+importFrom("utils", "setTxtProgressBar", "tail", "txtProgressBar")

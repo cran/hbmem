@@ -189,7 +189,7 @@ void sampleGamma(double *block,double *dat,int *cond,int *subj, int *item,double
   }
   
   //Decorrelate Alpha and Beta
-  if(I[0]>1 & J[0]>1){
+  if((I[0]>1) && (J[0]>1)){
     shift=rnorm(0,met[N[0]+I[0]+J[0]+1]);
     for(i=0;i<I[0];i++) alphaProp[i]=alpha[i]+shift;
     for(j=0;j<J[0];j++) betaProp[j]=beta[j]-shift;
@@ -397,7 +397,7 @@ void samplePosGamma(double *block,double *dat,int *cond,int *subj, int *item,dou
   }
   
   //Decorrelate Alpha and Beta
-  if(I[0]>1 & J[0]>1){
+  if((I[0]>1) && (J[0]>1)){
     shift=rnorm(0,met[N[0]+I[0]+J[0]+1]);
     for(i=0;i<I[0];i++) alphaProp[i]=alpha[i]+shift;
     for(j=0;j<J[0];j++) betaProp[j]=beta[j]-shift;

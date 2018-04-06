@@ -3,7 +3,8 @@
 \title{Function cond.rest.betaD}
 \description{Conditional for restricted DPSD model with positive d'}
 \usage{
-cond.rest.betaD(wD, muD, alphaD, betaD, thetaD, wR, muR, alphaR, betaR, sub, item, lag, sig2beta)
+cond.rest.betaD(wD, muD, alphaD, betaD, thetaD, wR,
+muR, alphaR, betaR, sub, item, lag, sig2beta)
 }
 \arguments{
   \item{wD}{ ~~Describe \code{wD} here~~ }

@@ -4,14 +4,15 @@
 \description{Samples posterior of mean parameters of the hierarchical
   linear normal model with the effects a linear function of some
   other variable.}
-\usage{sampleNormR(sample, phi,blockD,y,subj, item, lag, I, J, R, nsub, nitem,
-    s2mu, s2a, s2b, meta, metb, sigma2, sampLag)}
+\usage{sampleNormR(sample, phi,blockD,y,subj, item, lag, I, J, R,
+nsub, nitem,s2mu, s2a, s2b, meta, metb, sigma2, sampLag)}
 
 \arguments{
 \item{sample}{Block of linear model parameters from previous iteration.}
 \item{y}{Vector of data}
 \item{phi}{Vector of linear slopes on effects.}
-\item{blockD}{Block of parameters that will serve as the means of random effects}
+\item{blockD}{Block of parameters that will serve as the means of random
+  effects}
 \item{subj}{Vector of subject index, starting at zero.}
 \item{item}{Vector of item index, starting at zero.}
 \item{lag}{Vector of lag index, zero-centered.}
@@ -39,7 +40,8 @@
 \value{
   The function returns a list.  The first element of the list is the
   newly sampled block of parameters.  The THIRD element contains a
-  vector of 0s and 1s indicating which of the decorrelating steps were accepted.}
+  vector of 0s and 1s indicating which of the decorrelating steps were
+  accepted.}
 \references{Not published yet.}
 \author{Michael S. Pratte}
 \seealso{hbmem}
@@ -87,7 +89,8 @@ b0=c(0,0)
 
 for(m in 2:M)
   {
-tmp=sampleNormR(blockR[m-1,],phi,blockD,sim$resp,sim$subj,sim$item,sim$lag,I,J,I*J,table(sim$sub),table(sim$item),10,.01,.01,met[1],met[2],1,1)
+tmp=sampleNormR(blockR[m-1,],phi,blockD,sim$resp,sim$subj,sim$item,sim$lag,
+I,J,I*J,table(sim$sub),table(sim$item),10,.01,.01,met[1],met[2],1,1)
 blockR[m,]=tmp[[1]]
 b0=b0+tmp[[3]]
 }
@@ -111,7 +114,8 @@ s.block=matrix(0,nrow=M,ncol=B)
 met=c(.1,.1);b0=c(0,0)
 for(m in 2:M)
 {
-tmp=sampleNorm(s.block[m-1,],sim$resp,rep(0,length(sim$resp)),sim$subj,sim$item,sim$lag,1,I,J,R,R,table(sim$subj),
+tmp=sampleNorm(s.block[m-1,],sim$resp,rep(0,length(sim$resp)),sim$subj,
+sim$item,sim$lag,1,I,J,R,R,table(sim$subj),
 table(sim$item),100,.01,.01,met[1],met[2],1,1)
 s.block[m,]=tmp[[1]]
 b0=b0 + tmp[[2]]

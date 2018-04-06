@@ -12,7 +12,8 @@ shape=2,jump=.005)}
     numbers). Lags must be zero-centered.}
   \item{M}{Number of MCMC iterations.}
   \item{keep}{Which MCMC iterations should be included in estimates and
-    returned.  Use keep to both get ride of burn-in, and thin chains if necessary}
+    returned.  Use keep to both get ride of burn-in, and thin chains if
+    necessary}
   \item{getDIC}{Logical. should the function compute DIC value?  This
     takes a while if M is large.}
   \item{shape}{Fixed shape across both new and studied distributuions.}

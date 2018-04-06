@@ -51,7 +51,8 @@ s.sigma2=matrix(1,M,N)
 
 for(m in 2:M)
 {
-s.sigma2[m,]=sampleSig2(s.sigma2[m-1,],true.block,dat,cond,sub,item,lag,N,ncond,I, J,a,b)
+s.sigma2[m,]=sampleSig2(s.sigma2[m-1,],true.block,dat,cond,sub,item,lag,N,
+ncond,I, J,a,b)
 }
 
 par(mfrow=c(1,1),pty='s')

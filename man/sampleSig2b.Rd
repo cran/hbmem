@@ -4,7 +4,8 @@
 \description{Samples posterior of the variance of a normal
   distibution which has the same additive structure on the mean and the
   log of variance.  Usually used within MCMC loop.}
-\usage{sampleSig2b(sample,y,cond,sub,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,met,blockMean,sampLag=1,Hier=1)}
+\usage{sampleSig2b(sample,y,cond,sub,item,lag,N,I,J,R,ncond,nsub,nitem,
+s2mu,s2a,s2b,met,blockMean,sampLag=1,Hier=1)}
 
 \arguments{
 \item{sample}{Previous sample of block variances.}
@@ -17,7 +18,8 @@
 \item{I}{Number of subjects.}
 \item{J}{Number of items.}
 \item{R}{Total number of trials.}
-\item{ncond}{Vector of length (N) containing number of trials per each condition.}
+\item{ncond}{Vector of length (N) containing number of trials per each
+  condition.}
 \item{nsub}{Vector of length (I) containing number of trials per each
   subject.}
 \item{nitem}{Vector of length (J) containing number of trials per each

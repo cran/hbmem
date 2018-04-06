@@ -8,7 +8,8 @@
   no item effects and without hierarchical pooling (neither of which
   should be done!).}
 \usage{
-sampleNorm2(sample, y, cond, subj, item, lag, N, I, J, R, ncond, nsub, nitem, s2mu, s2a, s2b, meta, metb, sigma2, sampLag = 1, Hier = 1)
+sampleNorm2(sample, y, cond, subj, item, lag, N, I, J, R,
+ncond, nsub, nitem, s2mu, s2a, s2b, meta, metb, sigma2, sampLag = 1, Hier = 1)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

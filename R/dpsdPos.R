@@ -101,7 +101,7 @@ NN=length(levels(as.factor(cond[Scond==0])))
 if(NN!=1)
 {
 	print("ERROR: Can only have 1 baseline condition")
-	break()
+	return()
 }
 condN=rep(0,length(Scond))
 NS=length(levels(as.factor(cond[Scond==1])))

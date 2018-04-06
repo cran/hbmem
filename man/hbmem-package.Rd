@@ -8,8 +8,8 @@
 \tabular{ll}{
 Package: \tab hbmem\cr
 Type: \tab Package\cr
-Version: \tab 0.3\cr
-Date: \tab 2012-12-20\cr
+Version: \tab 0.3-1\cr
+Date: \tab 2018-04-05\cr
 License: \tab LGPL\cr
 LazyLoad: \tab yes\cr
 }

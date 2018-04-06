@@ -3,7 +3,8 @@
 \title{Function sampleNormb}
 \description{Same as sampleNorm, but assumes an additive model on sigma2,
   and takes the block of sigma2 parameters as argument}
-\usage{sampleNormb(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,meta,metb,blockSigma2,sampLag=1,Hier=1)}
+\usage{sampleNormb(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,
+s2mu,s2a,s2b,meta,metb,blockSigma2,sampLag=1,Hier=1)}
 
 \arguments{
 \item{sample}{Block of linear model parameters from previous iteration.}
@@ -16,7 +17,8 @@
 \item{I}{Number of subjects.}
 \item{J}{Number of items.}
 \item{R}{Total number of trials.}
-\item{ncond}{Vector of length (N) containing number of trials per each condition.}
+\item{ncond}{Vector of length (N) containing number of trials per each
+  condition.}
 \item{nsub}{Vector of length (I) containing number of trials per each
   subject.}
 \item{nitem}{Vector of length (J) containing number of trials per each
@@ -91,11 +93,13 @@ nitem=table(item)
 
 for(m in 2:10) #way to low for real analysis
   {
-    tmp=sampleNormb(blockS[m-1,],resp,cond,subj,item,lag,N,I,J,I*J,ncond,nsub,nitem,10,.01,.01,.02,.005,blockS2[m-1,],1,1)
+    tmp=sampleNormb(blockS[m-1,],resp,cond,subj,item,lag,N,I,J,I*J,
+ncond,nsub,nitem,10,.01,.01,.02,.005,blockS2[m-1,],1,1)
     blockS[m,]=tmp[[1]]
     b0mean=b0mean+tmp[[2]]
     
-    tmp=sampleSig2b(blockS2[m-1,],resp,cond,subj,item,lag,N,I,J,I*J,ncond,nsub,nitem,10,.01,.01,met,blockS[m,],1,1)
+    tmp=sampleSig2b(blockS2[m-1,],resp,cond,subj,item,lag,N,I,J,I*J,
+ncond,nsub,nitem,10,.01,.01,met,blockS[m,],1,1)
     blockS2[m,]=tmp[[1]]
     b0S2=b0S2+tmp[[2]]
    if(m<10) met=met+(b0S2/m<.3)*-jump +(b0S2/m>.5)*jump

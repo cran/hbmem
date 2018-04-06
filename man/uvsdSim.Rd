@@ -4,7 +4,8 @@
 \description{Simulates data from a hierarchical UVSD model.}
 \usage{uvsdSim(NN = 2, NS = 1, I = 30, J = 200, K = 6, muN = c(-0.5, 
     -0.2), s2aN = 0.2, s2bN = 0.2, muS = 0.5, s2aS = 0.2, s2bS = 0.2, 
-    muS2 = log(1), s2aS2 = 0, s2bS2 = 0,lagEffect = -0.001,crit = matrix(rep(c(-1.5,-0.5, 0, 0.5, 1.5), each = I), ncol = (K - 1)))}
+    muS2 = log(1), s2aS2 = 0, s2bS2 = 0,lagEffect = -0.001,
+crit = matrix(rep(c(-1.5,-0.5, 0, 0.5, 1.5), each = I), ncol = (K - 1)))}
 
 \arguments{
   \item{NN}{Number of conditions for new words.}
@@ -12,9 +13,13 @@
   \item{I}{Number of participants.}
   \item{J}{Number of items.}
   \item{K}{Number of response options.}
-  \item{muN}{Mean of new-item distribution.  If NN is greater than 1, then muN must be a vector of length NN.}
-  \item{s2aN}{Variance of participant effects on mean of new-item distribution.}  \item{s2bN}{Variance of item effects on mean of new-item distribution.}
-  \item{muS}{Mean of studied-item distribution.  If NS is greater than 1, then muS must be a vector of length NS.}
+  \item{muN}{Mean of new-item distribution.  If NN is greater than 1,
+    then muN must be a vector of length NN.}
+  \item{s2aN}{Variance of participant effects on mean of new-item
+    distribution.}
+  \item{s2bN}{Variance of item effects on mean of new-item distribution.}
+  \item{muS}{Mean of studied-item distribution.  If NS is greater than
+    1, then muS must be a vector of length NS.}
   \item{s2aS}{Variance of participant effects on mean of studied-item
     distribution.}
   \item{s2bS}{Variance of item effects on mean of studied-item distribution.}
