@@ -1,3 +1,4 @@
+#' @noRd
 sampleNorm2 = function(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,meta,metb,sigma2,sampLag=1,Hier=1)
 {
 b0=c(0,0)
@@ -6,8 +7,7 @@ samp=tmp[[1]]
 return(list(samp))
 }
 
-
-
+#' @noRd
 dpsdSample2=function(dat,M=5000,keep=(M/10):M,getDIC=TRUE,Hier=TRUE,jump=.01)
 {
 Scond=dat$Scond

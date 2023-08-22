@@ -4,16 +4,6 @@
 \docType{package}
 \title{Hierarchical Models of Recognition Memory}
 \description{Contains functions for fitting hierarchical versions of EVSD, UVSD, DPSD, and our gamma signal detection model to recognition memory confidence-ratings data.}
-\details{
-\tabular{ll}{
-Package: \tab hbmem\cr
-Type: \tab Package\cr
-Version: \tab 0.3-1\cr
-Date: \tab 2018-04-05\cr
-License: \tab LGPL\cr
-LazyLoad: \tab yes\cr
-}
-}
 \author{Michael S. Pratte <prattems@gmail.com>}
 \references{Morey, Pratte, and Rouder (2008); Pratte, Rouder, and Morey
   (2009); Pratte and Rouder (2012).}

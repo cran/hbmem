@@ -1,3 +1,4 @@
+#' @noRd
 gammaProbs=function(scale,shape,bounds)
 {
 cumulative=c(0,pgamma(bounds,shape=shape,scale=scale),1)
@@ -12,6 +13,7 @@ rtgamma=function(N,shape,scale,a,b)
 .C("rtruncgamma",as.double(y),as.integer(N),as.double(shape),as.double(scale),as.double(a),as.double(b),NAOK=TRUE,PACKAGE=.packageName)[[1]]
   }
 
+#' @noRd
 gammaLogLike=function(R,NN,NS,I,J,K,dat,cond,Scond,subj,item,lag,blockN,blockS,crit,shape)
   {
     like=1:R*0
@@ -20,6 +22,7 @@ tmp=.C("logLikeGamma",as.double(like),as.integer(R),as.integer(NN),as.integer(NS
     return(tmp)
   }
 
+#' @noRd
 gammaLikeLogLike=function(R,NN,NS,I,J,K,dat,cond,Scond,subj,item,lag,blockN,blockS,crit,shape)
   {
     like=1:R*0
@@ -28,6 +31,7 @@ tmp=.C("logLikeGammaLike",as.double(like),as.integer(R),as.integer(NN),as.intege
     return(tmp)
   }
 
+#' @noRd
 sampleGamma = function(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,met,shape,sampLag,pos=FALSE)
 {
   b0=rep(0,length(met))
@@ -121,7 +125,7 @@ gammaSim=function(NN=1,NS=2,I=30,J=200,K=6,muN=log(.65),s2aN=.2,s2bN=.2,muS=log(
   }
 
 
-
+#' @noRd
 gammaLikeSim=function(NN=1,NS=1,I=30,J=200,K=6,muS=log(.5),s2aS=.2,s2bS=.2,lagEffect=0,shape=2,crit=matrix(rep(c(.75,.8,1,1.35,1.6),each=I),ncol=(K-1)))
   {
     muN=1
@@ -411,9 +415,11 @@ return(u)
 #######################################################
 #######################################################
 
+#' @noRd
 gammaC2Like=function(crit,shape,thetaN,thetaS)
 exp(crit*(1/thetaN - 1/thetaS) + shape*log(thetaN/thetaS)) 
   
+#' @noRd
 gammaLike2C=function(like,shape,thetaN,thetaS)
 (log(like) - shape*log(thetaN/thetaS))/(1/thetaN - 1/thetaS)
 

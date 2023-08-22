@@ -2,7 +2,7 @@
 \alias{prm09}
 \docType{data}
 \title{PRM09 Data}
-\description{Confidence ratings data from Pratte, Rouder, \& Morey
+\description{Confidence ratings data from Pratte, Rouder, and Morey
   (2009).
 }
 \usage{data(prm09)}
@@ -23,7 +23,7 @@
   variable should be set to ``cond", and the "cond" variable should
   be all zeros.  This is a backwards-compatibility issue.}
 
-\source{Pratte, Rouder, \& Morey (2009).  Separating Mnemonic Process
+\source{Pratte, Rouder, and Morey (2009).  Separating Mnemonic Process
   from Participant and Item Effects in the Assessment of ROC
   Asymmetries.  Journal of Experimental Psychology: Learning, Memory,
   and Cognition.}

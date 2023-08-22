@@ -69,6 +69,7 @@ lag[Scond==0]=0
     return(ret)
   }
 
+#' @noRd
 dpsdPosLogLike=function (R, NN, NS, I, JN, JS, K, dat, cond, Scond, sub, item, 
     lag, blockN, blockD, blockR, crit) 
 {

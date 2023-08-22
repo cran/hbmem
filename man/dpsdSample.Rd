@@ -15,7 +15,7 @@ freeCrit=TRUE,Hier=TRUE, jump=.01)}
   \item{M}{Number of MCMC iterations.}
   \item{keep}{Which MCMC iterations should be included in estimates and
     returned.  Use keep to both get ride of burn-in, and thin chains if
-    necessary}
+    necessary.}
   \item{getDIC}{Logical. Should the function compute DIC value?  This
     takes a while if M is large.}
   \item{freeCrit}{Logical.  If true then criteria are estimated

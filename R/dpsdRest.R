@@ -4,6 +4,7 @@
 #return(-.5*sum(mean^2 - 2*x*mean) + (mu^2/sig2mu))
 #}
 
+#' @noRd
 cond.rest.alphaD=function(wD,muD,alphaD,betaD,thetaD,wR,muR,alphaR,betaR,sub,item,lag,sig2alpha)
 {
 meanD=exp(muD+alphaD[sub+1]+betaD[item+1]+thetaD*lag)
@@ -12,6 +13,7 @@ likeR=-.5*(alphaR[sub+1]^2 - 2*alphaR[sub+1]*(wR-muR-betaR[item+1]-thetaD*lag))
 return(tapply(likeD,sub,sum) + tapply(likeR,sub,sum) - .5*(alphaD^2/sig2alpha)) 
 }
 
+#' @noRd
 cond.rest.betaD=function(wD,muD,alphaD,betaD,thetaD,wR,muR,alphaR,betaR,sub,item,lag,sig2beta)
 {
 meanD=exp(muD+alphaD[sub+1]+betaD[item+1]+thetaD*lag)
@@ -28,6 +30,7 @@ return(tapply(likeD,item,sum) + tapply(likeR,item,sum) - .5*(betaD^2/sig2beta))
 #return(sum(likeD)+sum(likeR)-.5*thetaD^2/sig2theta)
 #}
 
+#' @noRd
 dpsdRestSample=function(dat,M=5000,keep=(M/10):M,getDIC=TRUE,jump=.001)
 {
 cond=dat$cond

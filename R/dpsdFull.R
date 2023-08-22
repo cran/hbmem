@@ -1,3 +1,4 @@
+#' @noRd
 dpsdFullSim=function(I=30,J=200,K=6,muN=-.7,s2aN=.2,s2bN=.2,muD=0,s2aD=.2,s2bD=.2,muR=qnorm(.25),phiA=1,etaA=0,phiB=1,etaB=0,crit=matrix(rep(c(-1.6,-.5,0,.5,1.6),each=I),ncol=(K-1)))
   {
     R=I*J
@@ -47,12 +48,14 @@ dpsdFullSim=function(I=30,J=200,K=6,muN=-.7,s2aN=.2,s2bN=.2,muD=0,s2aD=.2,s2bD=.
     return(ret)
   }
 
+#' @noRd
 cond.muD=function(x,mu,alpha,beta,theta,sub,item,lag,sig2mu)
 {
 mean=exp(mu+alpha[sub+1]+beta[item+1]+theta*lag)
 return(-.5*sum(mean^2 - 2*x*mean) + (mu^2/sig2mu))
 }
 
+#' @noRd
 cond.alphaD=function(wD,muD,alphaD,betaD,thetaD,alphaR,etaA,phiA,sub,item,lag,sig2alpha)
 {
 meanD=exp(muD+alphaD[sub+1]+betaD[item+1]+thetaD*lag)
@@ -60,6 +63,7 @@ like=-.5*(meanD^2 - 2*wD*meanD)
 return(tapply(like,sub,sum) - .5*(alphaD^2/sig2alpha) - ((phiA*alphaD)^2 - 2*phiA*alphaD*alphaR)/(2*etaA))
 }
 
+#' @noRd
 cond.betaD=function(wD,muD,alphaD,betaD,thetaD,betaR,etaB,phiB,sub,item,lag,sig2beta)
 {
 meanD=exp(muD+alphaD[sub+1]+betaD[item+1]+thetaD*lag)
@@ -67,6 +71,7 @@ like=-.5*(meanD^2 - 2*wD*meanD)
 return(tapply(like,item,sum) - .5*(betaD^2/sig2beta) - ((phiB*betaD)^2 - 2*phiB*betaD*betaR)/(2*etaB))
 }
 
+#' @noRd
 cond.thetaD=function(wD,muD,alphaD,betaD,thetaD,wR,muR,alphaR,betaR,sub,item,lag,sig2theta)
 {
 meanD=exp(muD+alphaD[sub+1]+betaD[item+1]+thetaD*lag)
@@ -75,6 +80,7 @@ likeR=-.5*((thetaD*lag)^2 - 2*thetaD*lag*(wR-muR-alphaR[sub+1]-betaR[item+1]))
 return(sum(likeD)+sum(likeR)-.5*thetaD^2/sig2theta)
 }
 
+#' @noRd
 dpsdFullSample=function(dat,M=5000,keep=(M/10):M,getDIC=TRUE,jump=.001)
 {
 cond=dat$cond

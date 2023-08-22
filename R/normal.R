@@ -1,12 +1,14 @@
 .packageName='hbmem'
 	
 #Nice plotting params.
+#' @noRd
 defpar=function(r,c)
 {
   list(mfrow=c(r,c),pty='s',pch=19,mar=c(4,4,3,.2),mgp=c(2.0,.6,0),cex=1.15,pty='s')
 }
 
 #Truncated Normal
+#' @noRd
 rtnorm=function(N,mu,sigma,a,b)
   {
     y=1:N*0
@@ -14,6 +16,7 @@ rtnorm=function(N,mu,sigma,a,b)
   }
 
 #Extract predicted from block
+#' @noRd
 getPred=function(block,cond,sub,item,lag,N,I,J,R)
   {
     pred=1:R
@@ -49,6 +52,7 @@ return(list(out,alpha,beta))
 } 
 
 #BLOCK MEANS WITH ONE VARIANCE AND CONDITION EFFECTS
+#' @noRd
 sampleNorm = function(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,meta,metb,sigma2,sampLag=TRUE,Hier=TRUE)
 {
 b0=c(0,0)
@@ -60,6 +64,7 @@ return(list(samp,b0))
 }
 
 
+#' @noRd
 sampleNormR = function(sample,phi,blockD,y,subj,item,lag,I,J,R,nsub,nitem,s2mu,s2a,s2b,meta,metb,sigma2,sampLag)
 {
 b0=c(0,0)
@@ -72,6 +77,7 @@ return(list(samp,p,b0))
 }
 
 #BLOCK MEANS WITH BLOCK VARIANCES
+#' @noRd
 sampleNormb = function(sample,y,cond,subj,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,meta,metb,blockSigma2,sampLag=1,Hier=1)
 {
 b0=c(0,0)
@@ -83,6 +89,7 @@ return(list(samp,b0))
 }
 
 #BLOCK VARIANCES
+#' @noRd
 sampleSig2b = function(sample,y,cond,sub,item,lag,N,I,J,R,ncond,nsub,nitem,s2mu,s2a,s2b,met,blockMean,sampLag=1,Hier=1)
 {
 b0=rep(0,N+I+J+3)
@@ -95,6 +102,7 @@ return(list(samp,b0))
 
 
 #ONE VARIANCE
+#' @noRd
 sampleSig2=function(sig2,block,y,cond,sub,item,lag,N,ncond,I, J,a,b) 
 return(.C("sampleSigma2",as.double(sig2),as.double(block),as.double(y),as.integer(cond),as.integer(sub),as.integer(item),as.double(lag),as.integer(N),as.integer(ncond),as.integer(I),as.integer(J),as.double(a),as.double(b),PACKAGE=.packageName)[[1]])
 
@@ -102,24 +110,28 @@ return(.C("sampleSigma2",as.double(sig2),as.double(block),as.double(y),as.intege
 ###########################
 #NORMAL WITH POSITIVE MEAN#
 ###########################
+#' @noRd
 nplike=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2)
 {
 mean=exp(mu[cond+1]+alpha[sub+1]+beta[item+1]+theta*lag)
 return((mean^2 - 2*x*mean)/(-2*sigma2))
 }
 
+#' @noRd
 ld.mu=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2mu,sigma2)
 return(tapply(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2),cond,sum) - .5*(mu^2/sig2mu))
 
+#' @noRd
 ld.alpha=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2alpha,sigma2)
 return(tapply(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2),sub,sum) - .5*(alpha^2/sig2alpha))
 
+#' @noRd
 ld.beta=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2beta,sigma2)
 return(tapply(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2),item,sum) - .5*(beta^2/sig2beta))
 
+#' @noRd
 ld.theta=function(x,mu,alpha,beta,theta,cond,sub,item,lag,sig2theta,sigma2)
 return(sum(nplike(x,mu,alpha,beta,theta,cond,sub,item,lag,sigma2)) - .5*(theta^2/sig2theta))
-
 
 samplePosNorm=function(sample,y,cond,sub,item,lag,N,I,J,R,sig2mu,a,b,met,sigma2,sampLag)
   {
